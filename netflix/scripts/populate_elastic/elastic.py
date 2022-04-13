@@ -91,7 +91,7 @@ class PostgresExtractor:
             return tuple(loaded_films_ids.split(","))
         return loaded_films_ids
 
-    def get_movies_ids_to_update(self) -> Sequence[str] | None:
+    def get_movies_ids_to_update(self) -> Sequence[str] | tuple[None]:
         movies_to_update_sql = """
         SELECT
             fw.id
@@ -116,7 +116,7 @@ class PostgresExtractor:
             )
             movies_ids = tuple([row['id'] for row in cursor.fetchall()])
             if not len(movies_ids):
-                return None
+                return (None,)
             return movies_ids
 
     def load_movies_batches(self) -> Iterator[MovieDetail]:
