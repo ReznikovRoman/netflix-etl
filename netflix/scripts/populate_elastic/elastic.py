@@ -91,7 +91,7 @@ class PostgresExtractor:
             return tuple(loaded_films_ids.split(","))
         return loaded_films_ids
 
-    def get_movies_ids_to_update(self) -> Sequence[str]:
+    def get_movies_ids_to_update(self) -> Sequence[str] | None:
         movies_to_update_sql = """
         SELECT
             fw.id
@@ -114,7 +114,10 @@ class PostgresExtractor:
                 query=movies_to_update_sql,
                 vars={"time_stamp": self.get_etl_timestamp(), "loaded_films": loaded_films_ids},
             )
-            return tuple([row['id'] for row in cursor.fetchall()])
+            movies_ids = tuple([row['id'] for row in cursor.fetchall()])
+            if not len(movies_ids):
+                return None
+            return movies_ids
 
     def load_movies_batches(self) -> Iterator[MovieDetail]:
         movies_sql = """
@@ -140,7 +143,8 @@ class PostgresExtractor:
         WHERE fw.id IN %s
         GROUP BY fw.id
         """
-        batches = self.load_data(movies_sql, MovieDetail, params=[self.get_movies_ids_to_update()])
+        movies_ids = self.get_movies_ids_to_update()
+        batches = self.load_data(movies_sql, MovieDetail, params=[movies_ids])
         for batch in batches:
             yield batch
 
