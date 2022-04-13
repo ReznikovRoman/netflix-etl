@@ -1,0 +1,36 @@
+syntax: glob
+# base
+*.pyc
+*.pyo
+*.DS_Store
+*.installed.cfg
+*build/
+*dist/
+*.egg-info/
+*~
+.idea/
+.run/
+__pycache__/
+*.pytest_cache
+*.sqlite3
+*.log
+*.mo
+
+# ENV data
+venv/
+*.env
+!*example.env
+
+# ssl
+*.key
+*.crt
+
+# local
+local_scripts
+
+# netflix app
+netflix/.env
+netflix/.idea
+netflix/netflix/staticfiles/
+netflix/netflix/settings/local.py
+netflix/requirements/requirements.local.*

@@ -1,0 +1,30 @@
+[flake8]
+max-line-length = 120
+show-source = true
+statistics = true
+extend-exclude =
+    venv*,
+    .git,
+    */migrations/*,
+    *.sqlite,
+    .*
+ignore =
+    # Line break occurred after a binary operator
+    W504,
+    # Missing docstrings
+    D100,D101,D102,D103,D104,D105,D106,D107,
+    # First line should be in imperative mood
+    D401,
+    # Avoid using null=True on string-based fields such CharField
+    DJ01,
+    # Double quotes found but single quotes preferred
+    Q000
+per-file-ignores =
+    # Variable/function name conventions
+    */settings/*.py:N802,VNE003
+    # Variable/function name conventions
+    scripts/load_db/schemas.py:N802,VNE003
+    # Multi-line containers
+    */admin.py:JS101,JS102
+    # Line too long
+    */migrations/*:E501
