@@ -13,13 +13,13 @@ import redis
 from elasticsearch import Elasticsearch, RequestsHttpConnection, helpers
 from psycopg2.extras import RealDictCursor
 
-from scripts.populate_elastic.constants import (
+from constants import (
     ES_INDEX_NAME, ETL_LAST_INDEXES_KEY, ETL_REFRESH_TIME_SECONDS, ETL_TIMESTAMP_KEY,
 )
-from scripts.populate_elastic.movies_types import PgSchema, PgSchemaClass
-from scripts.populate_elastic.schemas import MovieDetail
-from scripts.populate_elastic.state import RedisStorage, State
-from scripts.populate_elastic.utils import retry
+from movies_types import PgSchema, PgSchemaClass
+from schemas import MovieDetail
+from state import RedisStorage, State
+from utils import retry
 
 
 if TYPE_CHECKING:
