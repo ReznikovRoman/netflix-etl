@@ -1,4 +1,5 @@
 from .base import Base
+from .external import External
 
 
 try:
@@ -10,6 +11,7 @@ else:
 
 __all__ = [
     'Base',
+    'External',
 ]
 
 if LOCAL_CONFIGURATION_EXISTS:
