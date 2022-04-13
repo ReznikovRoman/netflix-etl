@@ -14,10 +14,10 @@ jobs:
       matrix:
         include:
           - context: ./netflix
-            dockerfile: ./netflix/Dockerfile
+            dockerfile: ./netflix/prod.Dockerfile
             image: yandexmiddleteamv1/admin
           - context: ./netflix/scripts/populate_elastic
-            dockerfile: ./netflix/scripts/populate_elastic/conf/docker/Dockerfile
+            dockerfile: ./netflix/scripts/populate_elastic/conf/docker/prod.Dockerfile
             image: yandexmiddleteamv1/etl
     permissions:
       contents: read
