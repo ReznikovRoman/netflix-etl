@@ -65,7 +65,7 @@ class MovieDetail(BasePgSchema):
     def _prepare_genres(data: dict) -> dict:
         genres: list[dict] = data['genre'] or []
         dct = {
-            "genre": [GenreDetail.from_dict(genre) for genre in genres]
+            "genre": [GenreDetail.from_dict(genre) for genre in genres],
         }
         return dct
 
