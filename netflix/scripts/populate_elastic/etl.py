@@ -81,8 +81,7 @@ class PostgresExtractor:
     def get_etl_timestamp(self) -> datetime.datetime:
         timestamp: str | None = self._state.get_state(ETL_TIMESTAMP_KEY)
         if timestamp is None:
-            # ставим дату последнего обновления в далекое прошлое
-            return datetime.datetime(1920, 1, 1, 1, 1, 1, 1)
+            return datetime.datetime.min
         return datetime.datetime.fromtimestamp(int(timestamp))
 
     def get_loaded_films_ids(self) -> tuple[str, ...] | None:
@@ -123,10 +122,11 @@ class PostgresExtractor:
         movies_sql = """
         SELECT
             fw.id, fw.title, fw.rating AS imdb_rating, fw.description,
-            array_agg(DISTINCT g.name) AS genre,
-            array_agg(DISTINCT p.full_name) FILTER (WHERE pfw.role = 'director') AS director,
+            array_agg(DISTINCT g.name) AS genres_names,
+            array_agg(DISTINCT p.full_name) FILTER (WHERE pfw.role = 'director') AS directors_names,
             array_agg(DISTINCT p.full_name) FILTER (WHERE pfw.role = 'actor') AS actors_names,
             array_agg(DISTINCT p.full_name) FILTER (WHERE pfw.role = 'writer') AS writers_names,
+            json_agg(DISTINCT jsonb_build_object('id', g.id, 'name', g.name)) AS genre,
             json_agg(
                 DISTINCT jsonb_build_object('id', p.id, 'name', p.full_name))
                 FILTER (WHERE pfw.role = 'actor'
@@ -134,7 +134,11 @@ class PostgresExtractor:
             json_agg(
                 DISTINCT jsonb_build_object('id', p.id, 'name', p.full_name))
                 FILTER (WHERE pfw.role = 'writer'
-            ) AS writers
+            ) AS writers,
+            json_agg(
+                DISTINCT jsonb_build_object('id', p.id, 'name', p.full_name))
+                FILTER (WHERE pfw.role = 'director'
+            ) AS directors
         FROM content.film_work as fw
         LEFT OUTER JOIN content.genre_film_work gfw on fw.id = gfw.film_work_id
         LEFT OUTER JOIN content.genre g on g.id = gfw.genre_id
@@ -235,14 +239,29 @@ class ElasticLoader:
             "mappings": {
                 "dynamic": "strict",
                 "properties": {
-                    "id": {
+                    "uuid": {
                         "type": "keyword",
                     },
                     "imdb_rating": {
                         "type": "float",
                     },
                     "genre": {
-                        "type": "keyword",
+                        "type": "nested",
+                        "dynamic": "strict",
+                        "properties": {
+                            "uuid": {
+                                "type": "keyword",
+                            },
+                            "name": {
+                                "type": "text",
+                                "analyzer": "ru_en",
+                                "fields": {
+                                    "raw": {
+                                        "type": "keyword",
+                                    },
+                                },
+                            },
+                        },
                     },
                     "title": {
                         "type": "text",
@@ -257,7 +276,7 @@ class ElasticLoader:
                         "type": "text",
                         "analyzer": "ru_en",
                     },
-                    "director": {
+                    "genres_names": {
                         "type": "text",
                         "analyzer": "ru_en",
                     },
@@ -269,14 +288,18 @@ class ElasticLoader:
                         "type": "text",
                         "analyzer": "ru_en",
                     },
+                    "directors_names": {
+                        "type": "text",
+                        "analyzer": "ru_en",
+                    },
                     "actors": {
                         "type": "nested",
                         "dynamic": "strict",
                         "properties": {
-                            "id": {
+                            "uuid": {
                                 "type": "keyword",
                             },
-                            "name": {
+                            "full_name": {
                                 "type": "text",
                                 "analyzer": "ru_en",
                             },
@@ -286,10 +309,23 @@ class ElasticLoader:
                         "type": "nested",
                         "dynamic": "strict",
                         "properties": {
-                            "id": {
+                            "uuid": {
                                 "type": "keyword",
                             },
-                            "name": {
+                            "full_name": {
+                                "type": "text",
+                                "analyzer": "ru_en",
+                            },
+                        },
+                    },
+                    "directors": {
+                        "type": "nested",
+                        "dynamic": "strict",
+                        "properties": {
+                            "uuid": {
+                                "type": "keyword",
+                            },
+                            "full_name": {
                                 "type": "text",
                                 "analyzer": "ru_en",
                             },
@@ -323,7 +359,7 @@ class ElasticLoader:
         self.update_ids_in_state(kwargs['data'])
 
     def update_ids_in_state(self, data) -> None:
-        ids = ','.join([str(movie_data['_source']['id']) for movie_data in data])
+        ids = ','.join([str(movie_data['_source']['uuid']) for movie_data in data])
         self._state.set_state(ETL_LAST_INDEXES_KEY, ids)
 
 

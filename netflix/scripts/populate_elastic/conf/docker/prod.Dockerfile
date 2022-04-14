@@ -32,4 +32,4 @@ COPY ./conf /app/conf
 COPY . .
 
 # Spin up etl service
-CMD ["python", "elastic.py"]
+CMD ["python", "etl.py"]

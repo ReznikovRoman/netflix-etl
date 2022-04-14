@@ -75,7 +75,7 @@ services:
       - .:/app
     command: >
       bash -c "cd /app/scripts/populate_elastic
-      && python elastic.py"
+      && python etl.py"
     depends_on:
       - db
       - redis
