@@ -1,0 +1,7 @@
+-c requirements.txt
+
+pip-tools
+
+pre-commit==2.17.0
+
+ipython==8.1.1
