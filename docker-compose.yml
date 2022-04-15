@@ -48,7 +48,7 @@ services:
       - kibana
 
   db_admin:
-    image: yandexmiddleteamv1/netflix-admin-db:master
+    image: yandexmiddleteamv1/netflix-admin-db:latest
     environment:
       - POSTGRES_USER=${NA_DB_USER}
       - POSTGRES_PASSWORD=${NA_DB_PASSWORD}
@@ -61,7 +61,7 @@ services:
   server:
     platform: linux/amd64
     restart: always
-    image: yandexmiddleteamv1/netflix-admin:master
+    image: yandexmiddleteamv1/netflix-admin:latest
     env_file:
       - $ENV
     ports:
