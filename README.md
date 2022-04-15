@@ -26,7 +26,7 @@ ENV=.env
 # Netflix Admin
 # Django
 DJANGO_SETTINGS_MODULE=netflix.settings
-DJANGO_CONFIGURATION=Base
+DJANGO_CONFIGURATION=External
 DJANGO_ADMIN=django-cadmin
 DJANGO_SECRET_KEY=change-me
 ALLOWED_HOSTS=localhost,127.0.0.1
