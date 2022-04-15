@@ -3,11 +3,11 @@ import logging
 from typing import ClassVar, Iterator
 
 from db import get_elastic_connection, get_postgres_connection, get_redis_connection
-from extractors import FilmworkExtractor, PgExtractor
-from loaders import ElasticLoader, FilmworkLoader
+from extractors import FilmworkExtractor, GenreExtractor, PgExtractor
+from loaders import ElasticLoader, FilmworkLoader, GenreLoader
 from movies_types import PgSchema
 from state import RedisStorage, State
-from transformers import ElasticTransformer, FilmworkTransformer
+from transformers import ElasticTransformer, FilmworkTransformer, GenreTransformer
 from utils import RequiredAttributes
 
 
@@ -50,9 +50,18 @@ class ETLPipeline(metaclass=RequiredAttributes("loader", "transformer", "extract
 
 
 class FilmworkPipeline(ETLPipeline):
-    """Пайплайн для синхронизации фильмов с Elasticsearch."""
+    """Пайплайн для синхронизации Фильмов с Elasticsearch."""
 
     state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
     loader = FilmworkLoader(es=get_elastic_connection(), state=state, logger=logger.debug)
     transformer = FilmworkTransformer(logger=logger.debug)
     extractor = FilmworkExtractor(pg_conn=get_postgres_connection(), state=state, logger=logger.debug)
+
+
+class GenrePipeline(ETLPipeline):
+    """Пайплайн для синхронизации Жанров с Elasticsearch."""
+
+    state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
+    loader = GenreLoader(es=get_elastic_connection(), state=state, logger=logger.debug)
+    transformer = GenreTransformer(logger=logger.debug)
+    extractor = GenreExtractor(pg_conn=get_postgres_connection(), state=state, logger=logger.debug)

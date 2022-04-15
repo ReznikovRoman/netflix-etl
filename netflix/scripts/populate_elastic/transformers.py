@@ -3,9 +3,9 @@ from __future__ import annotations
 import logging
 from typing import ClassVar, Iterator
 
-from constants import ETL_FILMWORK_INDEX_NAME
+from constants import ETL_FILMWORK_INDEX_NAME, ETL_GENRE_INDEX_NAME
 from movies_types import PgSchema
-from schemas import MovieDetail
+from schemas import GenreDetail, MovieDetail
 from utils import RequiredAttributes
 
 
@@ -47,4 +47,13 @@ class FilmworkTransformer(ElasticTransformer):
     etl_schema_class = MovieDetail
 
     es_index_name = ETL_FILMWORK_INDEX_NAME
+    es_type = "_doc"
+
+
+class GenreTransformer(ElasticTransformer):
+    """`Преобразователь` данных Жанров."""
+
+    etl_schema_class = GenreDetail
+
+    es_index_name = ETL_GENRE_INDEX_NAME
     es_type = "_doc"

@@ -17,12 +17,14 @@ class BasePgSchema(ABC):
 
 
 @dataclass
-class GenreDetail(BasePgSchema):
+class GenreList(BasePgSchema):
+    """Жанр (используется в списке)."""
+
     id: uuid.uuid4  # noqa: VNE003
     name: str
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'GenreDetail':
+    def from_dict(cls, data: dict) -> 'GenreList':
         return cls(id=data['id'], name=data['name'])
 
     def to_dict(self) -> dict[str, Any]:
@@ -31,12 +33,14 @@ class GenreDetail(BasePgSchema):
 
 
 @dataclass
-class PersonDetail(BasePgSchema):
+class PersonList(BasePgSchema):
+    """Персона (используется в списке)."""
+
     id: uuid.uuid4  # noqa: VNE003
     name: str
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'PersonDetail':
+    def from_dict(cls, data: dict) -> 'PersonList':
         return cls(id=data['id'], name=data['name'])
 
     def to_dict(self) -> dict[str, Any]:
@@ -46,6 +50,8 @@ class PersonDetail(BasePgSchema):
 
 @dataclass
 class MovieDetail(BasePgSchema):
+    """Фильм в онлайн-кинотеатре."""
+
     id: uuid.uuid4  # noqa: VNE003
     imdb_rating: float
     title: str
@@ -56,16 +62,16 @@ class MovieDetail(BasePgSchema):
     actors_names: list[str]
     writers_names: list[str]
 
-    genre: list[GenreDetail]
-    actors: list[PersonDetail]
-    writers: list[PersonDetail]
-    directors: list[PersonDetail]
+    genre: list[GenreList]
+    actors: list[PersonList]
+    writers: list[PersonList]
+    directors: list[PersonList]
 
     @staticmethod
     def _prepare_genres(data: dict) -> dict:
         genres: list[dict] = data['genre'] or []
         dct = {
-            "genre": [GenreDetail.from_dict(genre) for genre in genres],
+            "genre": [GenreList.from_dict(genre) for genre in genres],
         }
         return dct
 
@@ -77,7 +83,7 @@ class MovieDetail(BasePgSchema):
             for person_type in persons_types
         }
         dct = {
-            person_type: [PersonDetail.from_dict(person) for person in person_data]
+            person_type: [PersonList.from_dict(person) for person in person_data]
             for person_type, person_data in person_data_map.items()
         }
         return dct
@@ -120,4 +126,20 @@ class MovieDetail(BasePgSchema):
             "genre": [genre.to_dict() for genre in self.genre],
         }
         dct.update(self._serialize_persons())
+        return dct
+
+
+@dataclass
+class GenreDetail(BasePgSchema):
+    """Жанр у Фильма."""
+
+    id: uuid.uuid4  # noqa: VNE003
+    name: str
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'GenreDetail':
+        return cls(id=data['id'], name=data['name'])
+
+    def to_dict(self) -> dict[str, Any]:
+        dct = {"uuid": self.id, "name": self.name}
         return dct

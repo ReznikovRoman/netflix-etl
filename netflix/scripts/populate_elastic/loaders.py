@@ -3,7 +3,9 @@ from __future__ import annotations
 import logging
 from typing import ClassVar, Iterator
 
-from constants import ETL_FILMWORK_INDEX_NAME, ETL_FILMWORK_LOADED_IDS_KEY
+from constants import (
+    ETL_FILMWORK_INDEX_NAME, ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_INDEX_NAME, ETL_GENRE_LOADED_IDS_KEY,
+)
 from elasticsearch import Elasticsearch, helpers
 from state import State
 from utils import RequiredAttributes
@@ -197,3 +199,70 @@ class FilmworkLoader(ElasticLoader):
         },
     }
     es_index_name = ETL_FILMWORK_INDEX_NAME
+
+
+class GenreLoader(ElasticLoader):
+    """`Загрузчик` данных о Жанрах."""
+
+    etl_loaded_entities_ids_key = ETL_GENRE_LOADED_IDS_KEY
+
+    es_index = {
+        "settings": {
+            "refresh_interval": "1s",
+            "analysis": {
+                "filter": {
+                    "english_stop": {
+                        "type": "stop",
+                        "stopwords": "_english_",
+                    },
+                    "english_stemmer": {
+                        "type": "stemmer",
+                        "language": "english",
+                    },
+                    "english_possessive_stemmer": {
+                        "type": "stemmer",
+                        "language": "possessive_english",
+                    },
+                    "russian_stop": {
+                        "type": "stop",
+                        "stopwords": "_russian_",
+                    },
+                    "russian_stemmer": {
+                        "type": "stemmer",
+                        "language": "russian",
+                    },
+                },
+                "analyzer": {
+                    "ru_en": {
+                        "tokenizer": "standard",
+                        "filter": [
+                            "lowercase",
+                            "english_stop",
+                            "english_stemmer",
+                            "english_possessive_stemmer",
+                            "russian_stop",
+                            "russian_stemmer",
+                        ],
+                    },
+                },
+            },
+        },
+        "mappings": {
+            "dynamic": "strict",
+            "properties": {
+                "uuid": {
+                    "type": "keyword",
+                },
+                "name": {
+                    "type": "text",
+                    "analyzer": "ru_en",
+                    "fields": {
+                        "raw": {
+                            "type": "keyword",
+                        },
+                    },
+                },
+            },
+        },
+    }
+    es_index_name = ETL_GENRE_INDEX_NAME
