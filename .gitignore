@@ -27,10 +27,4 @@ venv/
 
 # local
 local_scripts
-
-# netflix app
-netflix/.env
-netflix/.idea
-netflix/netflix/staticfiles/
-netflix/netflix/settings/local.py
-netflix/requirements/requirements.local.*
+requirements/requirements.local.*

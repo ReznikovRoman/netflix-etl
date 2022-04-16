@@ -1,0 +1,22 @@
+{
+  "Verbose": false,
+  "Debug": false,
+  "IgnoreDefaults": false,
+  "SpacesAftertabs": false,
+  "NoColor": false,
+  "Exclude": [
+    "\\.sqlite3$",
+    "\\.sqlite$",
+    "\\.mo$",
+    "\\.po$",
+    "\\.pyc$",
+    "\\.txt$",
+    "\\.md$",
+    "__pycache__*"
+  ],
+  "AllowedContentTypes": [],
+  "PassedFiles": [],
+  "Disable": {
+    "IndentSize": true
+  }
+}

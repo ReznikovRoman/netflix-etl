@@ -7,18 +7,36 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.10' ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/requirements.lint.txt
+      - name: Run linters
+        run: make lint
+
   build-and-push-image:
+    needs: lint
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - context: ./netflix
-            dockerfile: ./netflix/prod.Dockerfile
-            image: yandexmiddleteamv1/admin
-          - context: ./netflix/scripts/populate_elastic
-            dockerfile: ./netflix/scripts/populate_elastic/conf/docker/prod.Dockerfile
-            image: yandexmiddleteamv1/etl
+          - context: .
+            dockerfile: ./dev.Dockerfile
+            image: yandexmiddleteamv1/netflix-etl
     permissions:
       contents: read
       packages: write
@@ -45,5 +63,5 @@ jobs:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}, ${{ matrix.image }}:latest
           labels: ${{ steps.meta.outputs.labels }}
