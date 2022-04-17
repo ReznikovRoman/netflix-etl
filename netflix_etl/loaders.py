@@ -7,7 +7,7 @@ from elasticsearch import Elasticsearch, helpers
 
 from netflix_etl.constants import (
     ETL_FILMWORK_INDEX_NAME, ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_INDEX_NAME, ETL_GENRE_LOADED_IDS_KEY,
-    ETL_PERSON_INDEX_NAME, ETL_PERSON_LOADED_IDS_KEY
+    ETL_PERSON_INDEX_NAME, ETL_PERSON_LOADED_IDS_KEY,
 )
 from netflix_etl.state import State
 from netflix_etl.utils import RequiredAttributes

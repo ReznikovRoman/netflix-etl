@@ -8,7 +8,7 @@ from netflix_etl.pipelines import FilmworkPipeline, GenrePipeline, PersonPipelin
 def main():
     logging.debug("--- Start ETL pipelines")
 
-    pipelines_to_run = (FilmworkPipeline, GenrePipeline)
+    pipelines_to_run = (FilmworkPipeline, GenrePipeline, PersonPipeline)
     for pipeline in pipelines_to_run:
         pipeline().execute()
 
