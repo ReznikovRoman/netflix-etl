@@ -12,7 +12,7 @@ def main():
     pipelines_to_run = (
         FilmworkPipeline,
         GenrePipeline,
-        PersonPipeline
+        PersonPipeline,
     )
 
     threads = []
