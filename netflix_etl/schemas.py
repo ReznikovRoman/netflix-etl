@@ -153,7 +153,7 @@ class PersonDetail(BasePgSchema):
     full_name: str
 
     @classmethod
-    def from_dict(cls, data: dict) -> "GenreDetail":
+    def from_dict(cls, data: dict) -> "PersonDetail":
         return cls(id=data["id"], full_name=data["full_name"])
 
     def to_dict(self) -> dict[str, Any]:
