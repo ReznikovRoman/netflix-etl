@@ -9,7 +9,7 @@ from psycopg2.extras import RealDictCursor
 
 from netflix_etl.constants import ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_LOADED_IDS_KEY, ETL_PERSON_LOADED_IDS_KEY
 from netflix_etl.movies_types import PgSchema, PgSchemaClass
-from netflix_etl.schemas import GenreDetail, MovieDetail, PersonDetail
+from netflix_etl.schemas import GenreDetail, MovieDetail, PersonFullDetail
 from netflix_etl.state import State
 from netflix_etl.utils import RequiredAttributes
 
@@ -228,7 +228,7 @@ class GenreExtractor(PgExtractor):
 class PersonExtractor(PgExtractor):
     """`Экстрактор` Участников из Postgres."""
 
-    etl_schema_class = PersonDetail
+    etl_schema_class = PersonFullDetail
 
     etl_timestamp_key = "person:last_run_at"
     etl_loaded_entities_ids_key = ETL_PERSON_LOADED_IDS_KEY

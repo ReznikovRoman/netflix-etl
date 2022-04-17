@@ -5,7 +5,7 @@ from typing import ClassVar, Iterator
 
 from netflix_etl.constants import ETL_FILMWORK_INDEX_NAME, ETL_GENRE_INDEX_NAME, ETL_PERSON_INDEX_NAME
 from netflix_etl.movies_types import PgSchema
-from netflix_etl.schemas import GenreDetail, MovieDetail, PersonDetail
+from netflix_etl.schemas import GenreDetail, MovieDetail, PersonFullDetail
 from netflix_etl.utils import RequiredAttributes
 
 
@@ -62,7 +62,7 @@ class GenreTransformer(ElasticTransformer):
 class PersonTransformer(ElasticTransformer):
     """`Преобразователь` данных Персон."""
 
-    etl_schema_class = PersonDetail
+    etl_schema_class = PersonFullDetail
 
     es_index_name = ETL_PERSON_INDEX_NAME
     es_type = "_doc"
