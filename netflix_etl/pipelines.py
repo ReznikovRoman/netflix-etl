@@ -3,7 +3,7 @@ import logging
 from typing import ClassVar, Iterator
 
 from netflix_etl.db import get_elastic_connection, get_postgres_connection, get_redis_connection
-from netflix_etl.extractors import FilmworkExtractor, GenreExtractor, PgExtractor, PersonExtractor
+from netflix_etl.extractors import FilmworkExtractor, GenreExtractor, PersonExtractor, PgExtractor
 from netflix_etl.loaders import ElasticLoader, FilmworkLoader, GenreLoader, PersonLoader
 from netflix_etl.movies_types import PgSchema
 from netflix_etl.state import RedisStorage, State
