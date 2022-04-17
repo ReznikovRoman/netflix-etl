@@ -3,11 +3,11 @@ import logging
 from typing import ClassVar, Iterator
 
 from netflix_etl.db import get_elastic_connection, get_postgres_connection, get_redis_connection
-from netflix_etl.extractors import FilmworkExtractor, GenreExtractor, PgExtractor
-from netflix_etl.loaders import ElasticLoader, FilmworkLoader, GenreLoader
+from netflix_etl.extractors import FilmworkExtractor, GenreExtractor, PgExtractor, PersonExtractor
+from netflix_etl.loaders import ElasticLoader, FilmworkLoader, GenreLoader, PersonLoader
 from netflix_etl.movies_types import PgSchema
 from netflix_etl.state import RedisStorage, State
-from netflix_etl.transformers import ElasticTransformer, FilmworkTransformer, GenreTransformer
+from netflix_etl.transformers import ElasticTransformer, FilmworkTransformer, GenreTransformer, PersonTransformer
 from netflix_etl.utils import RequiredAttributes
 
 
@@ -65,3 +65,12 @@ class GenrePipeline(ETLPipeline):
     loader = GenreLoader(es=get_elastic_connection(), state=state, logger=logger.debug)
     transformer = GenreTransformer(logger=logger.debug)
     extractor = GenreExtractor(pg_conn=get_postgres_connection(), state=state, logger=logger.debug)
+
+
+class PersonPipeline(ETLPipeline):
+    """Пайплайн для синхронизации Участников с Elasticsearch."""
+
+    state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
+    loader = PersonLoader(es=get_elastic_connection(), state=state, logger=logger.debug)
+    transformer = PersonTransformer(logger=logger.debug)
+    extractor = PersonExtractor(pg_conn=get_postgres_connection(), state=state, logger=logger.debug)

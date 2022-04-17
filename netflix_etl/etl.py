@@ -2,7 +2,7 @@ import logging
 from time import sleep
 
 from netflix_etl.constants import ETL_REFRESH_TIME_SECONDS
-from netflix_etl.pipelines import FilmworkPipeline, GenrePipeline
+from netflix_etl.pipelines import FilmworkPipeline, GenrePipeline, PersonPipeline
 
 
 def main():

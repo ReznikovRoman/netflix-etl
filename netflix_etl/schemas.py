@@ -143,3 +143,19 @@ class GenreDetail(BasePgSchema):
     def to_dict(self) -> dict[str, Any]:
         dct = {"uuid": self.id, "name": self.name}
         return dct
+
+
+@dataclass
+class PersonDetail(BasePgSchema):
+    """Участник фильма."""
+
+    id: uuid.uuid4  # noqa: VNE003
+    full_name: str
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "GenreDetail":
+        return cls(id=data["id"], full_name=data["full_name"])
+
+    def to_dict(self) -> dict[str, Any]:
+        dct = {"uuid": self.id, "full_name": self.full_name}
+        return dct

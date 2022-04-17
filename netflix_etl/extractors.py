@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Any, ClassVar, Iterator, Sequence
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from netflix_etl.constants import ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_LOADED_IDS_KEY
+from netflix_etl.constants import ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_LOADED_IDS_KEY, ETL_PERSON_LOADED_IDS_KEY
 from netflix_etl.movies_types import PgSchema, PgSchemaClass
-from netflix_etl.schemas import GenreDetail, MovieDetail
+from netflix_etl.schemas import GenreDetail, MovieDetail, PersonDetail
 from netflix_etl.state import State
 from netflix_etl.utils import RequiredAttributes
 
@@ -223,3 +223,28 @@ class GenreExtractor(PgExtractor):
     """
 
     entity_exclude_field = "g.id"
+
+
+class PersonExtractor(PgExtractor):
+    """`Экстрактор` Участников из Postgres."""
+
+    etl_schema_class = PersonDetail
+
+    etl_timestamp_key = "person:last_run_at"
+    etl_loaded_entities_ids_key = ETL_PERSON_LOADED_IDS_KEY
+
+    sql_all_entities = """
+        SELECT
+            p.id, p.full_name
+        FROM content.person AS p
+        WHERE p.id IN %s
+    """
+    sql_entities_to_sync = """
+        SELECT
+            p.id
+        FROM content.person as p
+        WHERE
+            p.modified > %(time_stamp)s
+    """
+
+    entity_exclude_field = "p.id"
