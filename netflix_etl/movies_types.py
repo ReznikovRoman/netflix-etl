@@ -1,6 +1,6 @@
 from typing import Type, Union
 
-from netflix_etl.schemas import GenreDetail, GenreList, MovieDetail, PersonList
+from netflix_etl.schemas import GenreDetail, GenreList, MovieDetail, PersonFullDetail, PersonList
 
 
 PgSchema = Union[
@@ -8,10 +8,12 @@ PgSchema = Union[
     MovieDetail,
     PersonList,
     GenreList,
+    PersonFullDetail,
 ]
 PgSchemaClass = Union[
     Type[GenreDetail],
     Type[MovieDetail],
     Type[PersonList],
     Type[GenreList],
+    Type[PersonFullDetail],
 ]

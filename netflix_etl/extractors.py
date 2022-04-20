@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Any, ClassVar, Iterator, Sequence
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from netflix_etl.constants import ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_LOADED_IDS_KEY
+from netflix_etl.constants import ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_LOADED_IDS_KEY, ETL_PERSON_LOADED_IDS_KEY
 from netflix_etl.movies_types import PgSchema, PgSchemaClass
-from netflix_etl.schemas import GenreDetail, MovieDetail
+from netflix_etl.schemas import GenreDetail, MovieDetail, PersonFullDetail
 from netflix_etl.state import State
 from netflix_etl.utils import RequiredAttributes
 
@@ -187,7 +187,7 @@ class FilmworkExtractor(PgExtractor):
     """
     sql_entities_to_sync = """
         SELECT
-            fw.id
+            DISTINCT fw.id
         FROM content.film_work as fw
         LEFT OUTER JOIN content.genre_film_work gfw on fw.id = gfw.film_work_id
         LEFT OUTER JOIN content.genre g on g.id = gfw.genre_id
@@ -223,3 +223,55 @@ class GenreExtractor(PgExtractor):
     """
 
     entity_exclude_field = "g.id"
+
+
+class PersonExtractor(PgExtractor):
+    """`Экстрактор` Участников из Postgres."""
+
+    etl_schema_class = PersonFullDetail
+
+    etl_timestamp_key = "person:last_run_at"
+    etl_loaded_entities_ids_key = ETL_PERSON_LOADED_IDS_KEY
+
+    sql_all_entities = """
+        SELECT
+            p.id, p.full_name,
+            array_agg(DISTINCT fw.id) AS films_ids,
+            json_agg(
+                DISTINCT jsonb_build_object(
+                'id', fw.id, 'title', fw.title, 'imdb_rating', fw.rating,
+                'age_rating', fw.age_rating, 'release_date', fw.release_date
+                ))
+                FILTER (WHERE pfw.role = 'actor'
+            ) AS actor,
+            json_agg(
+                DISTINCT jsonb_build_object(
+                'id', fw.id, 'title', fw.title, 'imdb_rating', fw.rating,
+                'age_rating', fw.age_rating, 'release_date', fw.release_date
+                ))
+                FILTER (WHERE pfw.role = 'writer'
+            ) AS writer,
+            json_agg(
+                DISTINCT jsonb_build_object(
+                'id', fw.id, 'title', fw.title, 'imdb_rating', fw.rating,
+                'age_rating', fw.age_rating, 'release_date', fw.release_date
+                ))
+                FILTER (WHERE pfw.role = 'director'
+            ) AS director
+        FROM content.person AS p
+        LEFT JOIN content.person_film_work pfw on p.id = pfw.person_id
+        LEFT OUTER JOIN content.film_work fw on fw.id = pfw.film_work_id
+        WHERE p.id IN %s
+        GROUP BY p.id
+    """
+    sql_entities_to_sync = """
+        SELECT
+            DISTINCT p.id
+        FROM content.person as p
+        LEFT JOIN content.person_film_work pfw on pfw.person_id = p.id
+        LEFT JOIN content.film_work fw on pfw.film_work_id = fw.id
+        WHERE
+            (p.modified > %(time_stamp)s or fw.modified > %(time_stamp)s)
+    """
+
+    entity_exclude_field = "p.id"
