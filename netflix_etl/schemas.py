@@ -155,35 +155,43 @@ class GenreDetail(BasePgSchema):
 
 
 @dataclass
-class MoviesList(BasePgSchema):
+class MovieList(BasePgSchema):
     """Список Фильмов."""
 
     id: uuid.uuid4  # noqa: VNE003
     title: str
     imdb_rating: float
+    age_rating: str
+    release_date: datetime.date
 
     @classmethod
-    def from_dict(cls, data: dict) -> "MoviesList":
-        return cls(id=data["id"], title=data["title"], imdb_rating=data["imdb_rating"])
+    def from_dict(cls, data: dict) -> "MovieList":
+        return cls(
+            id=data["id"], title=data["title"], imdb_rating=data["imdb_rating"], age_rating=data["age_rating"],
+            release_date=data["release_date"],
+        )
 
     def to_dict(self) -> dict[str, Any]:
-        dct = {"uuid": self.id, "title": self.title, "imdb_rating": self.imdb_rating}
+        dct = {
+            "uuid": self.id, "title": self.title, "imdb_rating": self.imdb_rating,
+            "age_rating": self.age_rating, "release_date": self.release_date,
+        }
         return dct
 
 
 @dataclass
 class PersonRoleFilm(BasePgSchema):
-    """Роль персоны со списком фильмов."""
+    """Роль Персоны со списком Фильмов."""
 
     role: str
-    films: list[MoviesList]
+    films: list[MovieList]
 
     @staticmethod
     def _prepare_fields(data: dict) -> dict:
         role = data["role"]
         dct = {
             "role": role,
-            "films": [MoviesList.from_dict(film) for film in data[role] or []],
+            "films": [MovieList.from_dict(film) for film in data[role] or []],
         }
         return dct
 
@@ -212,12 +220,10 @@ class PersonFullDetail(BasePgSchema):
     @staticmethod
     def _prepare_roles(data: dict) -> dict:
         persons_types: tuple[str, ...] = ("actor", "writer", "director")
-
         roles = [
             PersonRoleFilm.from_dict({"role": person_type, person_type: data[person_type]})
             for person_type in persons_types
         ]
-
         dct = {"roles": roles}
         return dct
 

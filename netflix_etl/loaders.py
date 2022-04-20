@@ -370,6 +370,12 @@ class PersonLoader(ElasticLoader):
                                 "imdb_rating": {
                                     "type": "float",
                                 },
+                                "age_rating": {
+                                    "type": "text",
+                                },
+                                "release_date": {
+                                    "type": "date",
+                                },
                             },
                         },
                     },
