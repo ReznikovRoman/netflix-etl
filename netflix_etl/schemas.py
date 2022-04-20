@@ -148,7 +148,7 @@ class GenreDetail(BasePgSchema):
 class MoviesList(BasePgSchema):
     """Список Фильмов."""
 
-    id: uuid.uuid4
+    id: uuid.uuid4  # noqa: VNE003
     title: str
     imdb_rating: float
 
