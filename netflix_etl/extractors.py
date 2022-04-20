@@ -159,7 +159,7 @@ class FilmworkExtractor(PgExtractor):
 
     sql_all_entities = """
         SELECT
-            fw.id, fw.title, fw.rating AS imdb_rating, fw.description,
+            fw.id, fw.title, fw.rating AS imdb_rating, fw.description, fw.age_rating, fw.release_date,
             array_agg(DISTINCT g.name) AS genres_names,
             array_agg(DISTINCT p.full_name) FILTER (WHERE pfw.role = 'director') AS directors_names,
             array_agg(DISTINCT p.full_name) FILTER (WHERE pfw.role = 'actor') AS actors_names,

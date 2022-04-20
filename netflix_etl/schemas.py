@@ -1,3 +1,4 @@
+import datetime
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -56,6 +57,8 @@ class MovieDetail(BasePgSchema):
     imdb_rating: float
     title: str
     description: str
+    age_rating: str
+    release_date: datetime.date
 
     genres_names: list[str]
     directors_names: list[str]
@@ -92,7 +95,11 @@ class MovieDetail(BasePgSchema):
     def _prepare_fields(data: dict) -> dict:
         dct = {
             "id": data["id"],
-            "imdb_rating": data["imdb_rating"], "title": data["title"], "description": data["description"],
+            "imdb_rating": data["imdb_rating"],
+            "title": data["title"],
+            "description": data["description"],
+            "age_rating": data["age_rating"],
+            "release_date": data["release_date"],
             "genres_names": data["genres_names"] or [],
             "actors_names": data["actors_names"] or [],
             "writers_names": data["writers_names"] or [],
@@ -119,6 +126,8 @@ class MovieDetail(BasePgSchema):
         dct = {
             "uuid": self.id,
             "imdb_rating": self.imdb_rating, "title": self.title, "description": self.description,
+            "age_rating": self.age_rating,
+            "release_date": self.release_date,
             "genres_names": self.genres_names,
             "actors_names": self.actors_names,
             "writers_names": self.writers_names,
