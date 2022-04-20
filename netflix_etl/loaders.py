@@ -323,6 +323,7 @@ class PersonLoader(ElasticLoader):
             },
         },
         "mappings": {
+            "dynamic": "strict",
             "properties": {
                 "uuid": {
                     "type": "keyword",
@@ -354,7 +355,7 @@ class PersonLoader(ElasticLoader):
                         "films": {
                             "type": "nested",
                             "properties": {
-                                "id": {
+                                "uuid": {
                                     "type": "keyword",
                                 },
                                 "title": {
