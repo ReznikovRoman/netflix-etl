@@ -317,7 +317,6 @@ class PersonLoader(ElasticLoader):
             },
         },
         "mappings": {
-            "dynamic": "strict",
             "properties": {
                 "uuid": {
                     "type": "keyword",
@@ -336,7 +335,6 @@ class PersonLoader(ElasticLoader):
                 },
                 "roles": {
                     "type": "nested",
-                    "dynamic": "strict",
                     "properties": {
                         "role": {
                             "type": "text",
@@ -349,7 +347,6 @@ class PersonLoader(ElasticLoader):
                         },
                         "films": {
                             "type": "nested",
-                            "dynamic": "strict",
                             "properties": {
                                 "id": {
                                     "type": "keyword",
@@ -364,7 +361,7 @@ class PersonLoader(ElasticLoader):
                                     },
                                 },
                                 "imdb_rating": {
-                                    "type": "keyword",
+                                    "type": "float",
                                 },
                             },
                         },

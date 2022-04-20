@@ -145,6 +145,7 @@ class GenreDetail(BasePgSchema):
         return dct
 
 
+@dataclass
 class MoviesList(BasePgSchema):
     """Список Фильмов."""
 
@@ -161,6 +162,7 @@ class MoviesList(BasePgSchema):
         return dct
 
 
+@dataclass
 class PersonRoleFilm(BasePgSchema):
     """Роль персоны со списком фильмов."""
 
@@ -172,7 +174,7 @@ class PersonRoleFilm(BasePgSchema):
         role = data["role"]
         dct = {
             "role": role,
-            "films": [MoviesList.from_dict(film) for film in data[role]],
+            "films": [MoviesList.from_dict(film) for film in data[role] or []],
         }
         return dct
 
