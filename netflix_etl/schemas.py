@@ -145,17 +145,91 @@ class GenreDetail(BasePgSchema):
         return dct
 
 
+class MoviesList(BasePgSchema):
+    """Список Фильмов."""
+
+    id: uuid.uuid4
+    title: str
+    imdb_rating: float
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "MoviesList":
+        return cls(id=data["id"], title=data["title"], imdb_rating=data["imdb_rating"])
+
+    def to_dict(self) -> dict[str, Any]:
+        dct = {"uuid": self.id, "title": self.title, "imdb_rating": self.imdb_rating}
+        return dct
+
+
+class PersonRoleFilm(BasePgSchema):
+    """Роль персоны со списком фильмов."""
+
+    role: str
+    films: list[MoviesList]
+
+    @staticmethod
+    def _prepare_fields(data: dict) -> dict:
+        role = data["role"]
+        dct = {
+            "role": role,
+            "films": [MoviesList.from_dict(film) for film in data[role]],
+        }
+        return dct
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "PersonRoleFilm":
+        dct = cls._prepare_fields(data)
+        return cls(**dct)
+
+    def to_dict(self) -> dict[str, Any]:
+        dct = {
+            "role": self.role,
+            "films": [film.to_dict() for film in self.films],
+        }
+        return dct
+
+
 @dataclass
-class PersonDetail(BasePgSchema):
-    """Участник фильма."""
+class PersonFullDetail(BasePgSchema):
+    """Персона (с разбиением фильмов по ролям)."""
 
     id: uuid.uuid4  # noqa: VNE003
     full_name: str
+    films_ids: list[uuid.uuid4]
+    roles: list[PersonRoleFilm]
+
+    @staticmethod
+    def _prepare_roles(data: dict) -> dict:
+        persons_types: tuple[str, ...] = ("actor", "writer", "director")
+
+        roles = [
+            PersonRoleFilm.from_dict({"role": person_type, person_type: data[person_type]})
+            for person_type in persons_types
+        ]
+
+        dct = {"roles": roles}
+        return dct
+
+    @staticmethod
+    def _prepare_fields(data: dict) -> dict:
+        dct = {
+            "id": data["id"],
+            "full_name": data["full_name"],
+            "films_ids": data["films_ids"],
+        }
+        dct.update(PersonFullDetail._prepare_roles(data))
+        return dct
 
     @classmethod
-    def from_dict(cls, data: dict) -> "PersonDetail":
-        return cls(id=data["id"], full_name=data["full_name"])
+    def from_dict(cls, data: dict) -> "PersonFullDetail":
+        dct = cls._prepare_fields(data)
+        return cls(**dct)
 
     def to_dict(self) -> dict[str, Any]:
-        dct = {"uuid": self.id, "full_name": self.full_name}
+        dct = {
+            "uuid": self.id,
+            "full_name": self.full_name,
+            "films_ids": self.films_ids,
+            "roles": [role.to_dict() for role in self.roles],
+        }
         return dct

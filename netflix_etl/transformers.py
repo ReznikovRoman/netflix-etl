@@ -60,7 +60,7 @@ class GenreTransformer(ElasticTransformer):
 
 
 class PersonTransformer(ElasticTransformer):
-    """`Преобразователь` данных Участников."""
+    """`Преобразователь` данных Персон."""
 
     etl_schema_class = PersonDetail
 

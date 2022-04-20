@@ -271,7 +271,7 @@ class GenreLoader(ElasticLoader):
 
 
 class PersonLoader(ElasticLoader):
-    """`Загрузчик` данных о участниках."""
+    """`Загрузчик` данных о Персонах."""
 
     etl_loaded_entities_ids_key = ETL_PERSON_LOADED_IDS_KEY
 
@@ -328,6 +328,45 @@ class PersonLoader(ElasticLoader):
                     "fields": {
                         "raw": {
                             "type": "keyword",
+                        },
+                    },
+                },
+                "films_ids": {
+                    "type": "keyword",
+                },
+                "roles": {
+                    "type": "nested",
+                    "dynamic": "strict",
+                    "properties": {
+                        "role": {
+                            "type": "text",
+                            "analyzer": "ru_en",
+                            "fields": {
+                                "raw": {
+                                    "type": "keyword",
+                                },
+                            },
+                        },
+                        "films": {
+                            "type": "nested",
+                            "dynamic": "strict",
+                            "properties": {
+                                "id": {
+                                    "type": "keyword",
+                                },
+                                "title": {
+                                    "type": "text",
+                                    "analyzer": "ru_en",
+                                    "fields": {
+                                        "raw": {
+                                            "type": "keyword",
+                                        },
+                                    },
+                                },
+                                "imdb_rating": {
+                                    "type": "keyword",
+                                },
+                            },
                         },
                     },
                 },
