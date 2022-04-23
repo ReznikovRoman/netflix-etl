@@ -339,6 +339,7 @@ class PersonLoader(ElasticLoader):
                 },
                 "films_ids": {
                     "type": "text",
+                    "analyzer": "ru_en",
                 },
                 "roles": {
                     "type": "nested",
