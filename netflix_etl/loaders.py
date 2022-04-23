@@ -338,7 +338,7 @@ class PersonLoader(ElasticLoader):
                     },
                 },
                 "films_ids": {
-                    "type": "keyword",
+                    "type": "text",
                 },
                 "roles": {
                     "type": "nested",
