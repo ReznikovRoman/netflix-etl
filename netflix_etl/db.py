@@ -16,6 +16,10 @@ if TYPE_CHECKING:
     from psycopg2._psycopg import connection
 
 
+def register_postgres_extensions() -> None:
+    psycopg2.extras.register_uuid()
+
+
 @retry(
     times=5,
     exceptions=[redis.exceptions.ConnectionError],
@@ -41,7 +45,9 @@ def get_postgres_connection() -> connection:
         "host": os.environ.get("NA_DB_HOST", "127.0.0.1"),
         "port": int(os.environ.get("NA_DB_PORT", 5432)),
     }
-    return psycopg2.connect(**postgres_dsl, cursor_factory=RealDictCursor)
+    conn = psycopg2.connect(**postgres_dsl, cursor_factory=RealDictCursor)
+    register_postgres_extensions()
+    return conn
 
 
 @retry(
