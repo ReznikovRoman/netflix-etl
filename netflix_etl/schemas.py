@@ -21,7 +21,7 @@ class BasePgSchema(ABC):
 class GenreList(BasePgSchema):
     """Жанр (используется в списке)."""
 
-    id: uuid.uuid4  # noqa: VNE003
+    id: uuid.UUID  # noqa: VNE003
     name: str
 
     @classmethod
@@ -37,7 +37,7 @@ class GenreList(BasePgSchema):
 class PersonList(BasePgSchema):
     """Персона (используется в списке)."""
 
-    id: uuid.uuid4  # noqa: VNE003
+    id: uuid.UUID  # noqa: VNE003
     name: str
 
     @classmethod
@@ -53,7 +53,7 @@ class PersonList(BasePgSchema):
 class MovieDetail(BasePgSchema):
     """Фильм в онлайн-кинотеатре."""
 
-    id: uuid.uuid4  # noqa: VNE003
+    id: uuid.UUID  # noqa: VNE003
     imdb_rating: float
     title: str
     description: str
@@ -142,7 +142,7 @@ class MovieDetail(BasePgSchema):
 class GenreDetail(BasePgSchema):
     """Жанр у Фильма."""
 
-    id: uuid.uuid4  # noqa: VNE003
+    id: uuid.UUID  # noqa: VNE003
     name: str
 
     @classmethod
@@ -158,7 +158,7 @@ class GenreDetail(BasePgSchema):
 class MovieList(BasePgSchema):
     """Список Фильмов."""
 
-    id: uuid.uuid4  # noqa: VNE003
+    id: uuid.UUID  # noqa: VNE003
     title: str
     imdb_rating: float
     age_rating: str
@@ -212,9 +212,9 @@ class PersonRoleFilm(BasePgSchema):
 class PersonFullDetail(BasePgSchema):
     """Персона (с разбиением фильмов по ролям)."""
 
-    id: uuid.uuid4  # noqa: VNE003
+    id: uuid.UUID  # noqa: VNE003
     full_name: str
-    films_ids: list[uuid.uuid4]
+    films_ids: list[uuid.UUID]
     roles: list[PersonRoleFilm]
 
     @staticmethod
@@ -232,7 +232,7 @@ class PersonFullDetail(BasePgSchema):
         dct = {
             "id": data["id"],
             "full_name": data["full_name"],
-            "films_ids": data["films_ids"],
+            "films_ids": data["films_ids"] or [],
         }
         dct.update(PersonFullDetail._prepare_roles(data))
         return dct
