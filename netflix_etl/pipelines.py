@@ -52,25 +52,43 @@ class ETLPipeline(metaclass=RequiredAttributes("loader", "transformer", "extract
 class FilmworkPipeline(ETLPipeline):
     """Пайплайн для синхронизации Фильмов с Elasticsearch."""
 
-    state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
-    loader = FilmworkLoader(es=get_elastic_connection(), state=state, logger=logger.debug)
-    transformer = FilmworkTransformer(logger=logger.debug)
-    extractor = FilmworkExtractor(pg_conn=get_postgres_connection(), state=state, logger=logger.debug)
+    state = State
+    loader = FilmworkLoader
+    transformer = FilmworkTransformer
+    extractor = FilmworkExtractor
+
+    def __init__(self):
+        self.state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
+        self.loader = FilmworkLoader(es=get_elastic_connection(), state=self.state, logger=logger.debug)
+        self.transformer = FilmworkTransformer(logger=logger.debug)
+        self.extractor = FilmworkExtractor(pg_conn=get_postgres_connection(), state=self.state, logger=logger.debug)
 
 
 class GenrePipeline(ETLPipeline):
     """Пайплайн для синхронизации Жанров с Elasticsearch."""
 
-    state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
-    loader = GenreLoader(es=get_elastic_connection(), state=state, logger=logger.debug)
-    transformer = GenreTransformer(logger=logger.debug)
-    extractor = GenreExtractor(pg_conn=get_postgres_connection(), state=state, logger=logger.debug)
+    state = State
+    loader = GenreLoader
+    transformer = GenreTransformer
+    extractor = GenreExtractor
+
+    def __init__(self):
+        self.state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
+        self.loader = GenreLoader(es=get_elastic_connection(), state=self.state, logger=logger.debug)
+        self.transformer = GenreTransformer(logger=logger.debug)
+        self.extractor = GenreExtractor(pg_conn=get_postgres_connection(), state=self.state, logger=logger.debug)
 
 
 class PersonPipeline(ETLPipeline):
     """Пайплайн для синхронизации Участников с Elasticsearch."""
 
-    state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
-    loader = PersonLoader(es=get_elastic_connection(), state=state, logger=logger.debug)
-    transformer = PersonTransformer(logger=logger.debug)
-    extractor = PersonExtractor(pg_conn=get_postgres_connection(), state=state, logger=logger.debug)
+    state = State
+    loader = PersonLoader
+    transformer = PersonTransformer
+    extractor = PersonExtractor
+
+    def __init__(self):
+        self.state = State(storage=RedisStorage(redis_adapter=get_redis_connection()))
+        self.loader = PersonLoader(es=get_elastic_connection(), state=self.state, logger=logger.debug)
+        self.transformer = PersonTransformer(logger=logger.debug)
+        self.extractor = PersonExtractor(pg_conn=get_postgres_connection(), state=self.state, logger=logger.debug)
