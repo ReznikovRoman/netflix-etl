@@ -22,10 +22,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements files
 COPY requirements/requirements.txt requirements.txt
 
-# Copy project files
-COPY . .
-
 # Install project dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
 
 CMD ["bash"]
