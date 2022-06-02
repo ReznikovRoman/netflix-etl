@@ -114,6 +114,9 @@ class FilmworkLoader(ElasticLoader):
                 "age_rating": {
                     "type": "text",
                 },
+                "access_type": {
+                    "type": "text",
+                },
                 "release_date": {
                     "type": "date",
                 },

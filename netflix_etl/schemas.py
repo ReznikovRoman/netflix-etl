@@ -58,6 +58,7 @@ class MovieDetail(BasePgSchema):
     title: str
     description: str
     age_rating: str
+    access_type: str
     release_date: datetime.date
 
     genres_names: list[str]
@@ -96,6 +97,7 @@ class MovieDetail(BasePgSchema):
         dct = {
             "id": data["id"],
             "imdb_rating": data["imdb_rating"],
+            "access_type": data["access_type"],
             "title": data["title"],
             "description": data["description"],
             "age_rating": data["age_rating"],
@@ -125,6 +127,7 @@ class MovieDetail(BasePgSchema):
     def to_dict(self) -> dict[str, Any]:
         dct = {
             "uuid": self.id,
+            "access_type": self.access_type,
             "imdb_rating": self.imdb_rating, "title": self.title, "description": self.description,
             "age_rating": self.age_rating,
             "release_date": self.release_date,
