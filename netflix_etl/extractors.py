@@ -240,21 +240,21 @@ class PersonExtractor(PgExtractor):
             json_agg(
                 DISTINCT jsonb_build_object(
                 'id', fw.id, 'title', fw.title, 'imdb_rating', fw.rating,
-                'age_rating', fw.age_rating, 'release_date', fw.release_date
+                'age_rating', fw.age_rating, 'release_date', fw.release_date, 'access_type', fw.access_type
                 ))
                 FILTER (WHERE pfw.role = 'actor'
             ) AS actor,
             json_agg(
                 DISTINCT jsonb_build_object(
                 'id', fw.id, 'title', fw.title, 'imdb_rating', fw.rating,
-                'age_rating', fw.age_rating, 'release_date', fw.release_date
+                'age_rating', fw.age_rating, 'release_date', fw.release_date, 'access_type', fw.access_type
                 ))
                 FILTER (WHERE pfw.role = 'writer'
             ) AS writer,
             json_agg(
                 DISTINCT jsonb_build_object(
                 'id', fw.id, 'title', fw.title, 'imdb_rating', fw.rating,
-                'age_rating', fw.age_rating, 'release_date', fw.release_date
+                'age_rating', fw.age_rating, 'release_date', fw.release_date, 'access_type', fw.access_type
                 ))
                 FILTER (WHERE pfw.role = 'director'
             ) AS director
