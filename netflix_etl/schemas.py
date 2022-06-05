@@ -166,18 +166,19 @@ class MovieList(BasePgSchema):
     imdb_rating: float
     age_rating: str
     release_date: datetime.date
+    access_type: str
 
     @classmethod
     def from_dict(cls, data: dict) -> "MovieList":
         return cls(
             id=data["id"], title=data["title"], imdb_rating=data["imdb_rating"], age_rating=data["age_rating"],
-            release_date=data["release_date"],
+            release_date=data["release_date"], access_type=data["access_type"],
         )
 
     def to_dict(self) -> dict[str, Any]:
         dct = {
             "uuid": self.id, "title": self.title, "imdb_rating": self.imdb_rating,
-            "age_rating": self.age_rating, "release_date": self.release_date,
+            "age_rating": self.age_rating, "release_date": self.release_date, "access_type": self.access_type,
         }
         return dct
 
