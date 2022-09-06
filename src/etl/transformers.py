@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import logging
 from typing import ClassVar, Iterator
 
-from netflix_etl.constants import ETL_FILMWORK_INDEX_NAME, ETL_GENRE_INDEX_NAME, ETL_PERSON_INDEX_NAME
-from netflix_etl.movies_types import PgSchema
-from netflix_etl.schemas import GenreDetail, MovieDetail, PersonFullDetail
-from netflix_etl.utils import RequiredAttributes
+from .constants import ETL_FILMWORK_INDEX_NAME, ETL_GENRE_INDEX_NAME, ETL_PERSON_INDEX_NAME
+from .movies_types import PgSchema
+from .schemas import GenreDetail, MovieDetail, PersonFullDetail
+from .utils import RequiredAttributes
 
 
 class ElasticTransformer(metaclass=RequiredAttributes("etl_schema_class", "es_index_name", "es_type")):
@@ -17,9 +16,6 @@ class ElasticTransformer(metaclass=RequiredAttributes("etl_schema_class", "es_in
     # Настройка документа для Elasticsearch
     es_index_name: ClassVar[str]
     es_type: ClassVar[str]
-
-    def __init__(self, logger: logging):
-        self._logger = logger
 
     @staticmethod
     def _prepare_entity(entity: PgSchema) -> dict:

@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-import logging
 from typing import ClassVar, Iterator
 
 from elasticsearch import Elasticsearch, helpers
 
-from netflix_etl.constants import (
+from etl.infrastructure.db.state import State
+
+from .constants import (
     ETL_FILMWORK_INDEX_NAME, ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_INDEX_NAME, ETL_GENRE_LOADED_IDS_KEY,
     ETL_PERSON_INDEX_NAME, ETL_PERSON_LOADED_IDS_KEY,
 )
-from netflix_etl.state import State
-from netflix_etl.utils import RequiredAttributes
+from .utils import RequiredAttributes
 
 
 class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", "es_index", "es_index_name")):
@@ -24,13 +24,12 @@ class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", 
 
     entity_id_field: ClassVar[str] = "uuid"
 
-    def __init__(self, es: Elasticsearch, state: State, logger: logging):
-        self._es = es
+    def __init__(self, elastic_client: Elasticsearch, state: State):
+        self._elastic_client = elastic_client
         self._state = state
-        self._logger = logger
 
     def create_index(self):
-        self._es.indices.create(
+        self._elastic_client.indices.create(
             index=self.es_index_name,
             body=self.es_index,
             ignore=[400],
@@ -38,7 +37,7 @@ class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", 
         )
 
     def update_index(self, data: Iterator[dict]) -> tuple[int, int | list]:
-        return helpers.bulk(self._es, data)
+        return helpers.bulk(self._elastic_client, data)
 
     def load(self, data: Iterator[dict]) -> None:
         data = list(data)

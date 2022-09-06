@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   redis:
     image: "redis:alpine"
@@ -11,12 +13,18 @@ services:
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms750m -Xmx750m
     ports:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
     depends_on:
       - redis
+    healthcheck:
+      test: curl -u elastic:elastic -s -f   elasticsearch:9200/_cat/health >/dev/null || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   kibana:
     image: kibana:7.17.2
@@ -37,15 +45,19 @@ services:
     volumes:
       - .:/app
     command: >
-      bash -c "cd /app/netflix_etl
-      && python etl.py"
+      bash -c "cd /app/src
+      && python -m etl"
     env_file:
       - $ENV
     depends_on:
-      - db_admin
-      - redis
-      - elasticsearch
-      - kibana
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      db_admin:
+        condition: service_started
+      kibana:
+        condition: service_started
 
   db_admin:
     image: yandexmiddleteamv1/netflix-admin-db:latest

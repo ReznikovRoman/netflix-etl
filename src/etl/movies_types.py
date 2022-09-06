@@ -1,7 +1,6 @@
 from typing import Type, Union
 
-from netflix_etl.schemas import GenreDetail, GenreList, MovieDetail, PersonFullDetail, PersonList
-
+from .schemas import GenreDetail, GenreList, MovieDetail, PersonFullDetail, PersonList
 
 PgSchema = Union[
     GenreDetail,

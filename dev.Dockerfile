@@ -29,4 +29,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Spin up etl service
-CMD ["python", "netflix_etl/etl.py"]
+WORKDIR /app/src
+CMD ["python", "-m", "etl"]

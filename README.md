@@ -43,7 +43,7 @@ ENV=.env
 DJANGO_SETTINGS_MODULE=netflix.settings
 DJANGO_CONFIGURATION=External
 DJANGO_ADMIN=django-cadmin
-DJANGO_SECRET_KEY=change-me
+DJANGO_SECRET_KEY=7)%31(changeme12@g87_h8vthi4dj=1pjp^ysv*tnm_fx$fw6
 ALLOWED_HOSTS=localhost,127.0.0.1
 
 # Project
@@ -56,9 +56,9 @@ NA_STATIC_URL=/staticfiles/
 # Postgres
 NA_DB_HOST=db_admin
 NA_DB_PORT=5432
-NA_DB_NAME=
-NA_DB_USER=
-NA_DB_PASSWORD=
+NA_DB_NAME=netflix
+NA_DB_USER=test
+NA_DB_PASSWORD=yandex
 
 # Scripts
 NA_DB_POSTGRES_BATCH_SIZE=500
@@ -72,6 +72,7 @@ NE_REDIS_DECODE_RESPONSES=1
 # Elasticsearch
 NE_ES_HOST=elasticsearch
 NE_ES_PORT=9200
+NE_ES_RETRY_ON_TIMEOUT=1
 ```
 
 **Запуск производится в два этапа:**

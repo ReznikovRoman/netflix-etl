@@ -6,6 +6,7 @@ from typing import Any
 
 
 class BasePgSchema(ABC):
+    """Базовая схема данных из Postgres."""
 
     @classmethod
     @abstractmethod

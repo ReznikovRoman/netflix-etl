@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING, Any, ClassVar, Iterator, Sequence
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from netflix_etl.constants import ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_LOADED_IDS_KEY, ETL_PERSON_LOADED_IDS_KEY
-from netflix_etl.movies_types import PgSchema, PgSchemaClass
-from netflix_etl.schemas import GenreDetail, MovieDetail, PersonFullDetail
-from netflix_etl.state import State
-from netflix_etl.utils import RequiredAttributes
+from etl.infrastructure.db.state import State
 
+from .constants import ETL_FILMWORK_LOADED_IDS_KEY, ETL_GENRE_LOADED_IDS_KEY, ETL_PERSON_LOADED_IDS_KEY
+from .movies_types import PgSchema, PgSchemaClass
+from .schemas import GenreDetail, MovieDetail, PersonFullDetail
+from .utils import RequiredAttributes
 
 if TYPE_CHECKING:
     from psycopg2._psycopg import connection
@@ -42,15 +42,14 @@ class PgExtractor(
     sql_entities_to_sync: ClassVar[SQL]
 
     # настройка запросов
-    entities_to_select_params: ClassVar[list] = None
+    entities_to_select_params: ClassVar[list | None] = None
     entity_exclude_time_stamp_param: ClassVar[str] = "time_stamp"
     entity_exclude_field: ClassVar[str] = "id"
     entity_id_field: ClassVar[str] = "id"
 
-    def __init__(self, pg_conn: connection, state: State, logger: logging):
+    def __init__(self, pg_conn: connection, state: State):
         self._pg_conn = pg_conn
         self._state = state
-        self._logger = logger
 
     def _get_paginated_results(self, cursor: RealDictCursor, schema_class: PgSchemaClass) -> Iterator[list[PgSchema]]:
         """Получение данных из Postgres пачками по `BATCH_SIZE`."""
@@ -65,10 +64,7 @@ class PgExtractor(
             data = []
 
     def _load_data(
-        self,
-        sql: SQL,
-        schema_class: PgSchemaClass,
-        params: Sequence[Any] | None = None,
+        self, sql: SQL, schema_class: PgSchemaClass, params: Sequence[Any] | None = None,
     ) -> Iterator[list[PgSchema]]:
         if params is None:
             params = []
@@ -76,8 +72,8 @@ class PgExtractor(
         cursor: RealDictCursor = self._pg_conn.cursor()
         try:
             cursor.execute(sql, vars=params)
-        except psycopg2.OperationalError as e:
-            self._logger(f"Postgres operational error: `{e}`")
+        except psycopg2.OperationalError:
+            logging.error("Postgres operational error.")
             raise
         else:
             yield from self._get_paginated_results(cursor, schema_class)
@@ -85,10 +81,7 @@ class PgExtractor(
             cursor.close()
 
     def load_data(
-        self,
-        sql: SQL,
-        schema_class: PgSchemaClass,
-        params: Sequence[Any] | None = None,
+        self, sql: SQL, schema_class: PgSchemaClass, params: Sequence[Any] | None = None,
     ) -> Iterator[list[PgSchema]]:
         """Получение данных с переданными параметрами `params` и SQL `sql`."""
         yield from self._load_data(sql, schema_class, params)
