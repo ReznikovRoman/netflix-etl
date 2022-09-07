@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 
-from etl import extractors, loaders, pipelines, transformers
 from etl.config.logging import configure_logger
+from etl.domain import filmworks, genres, persons, pipelines
 from etl.infrastructure.db import elastic, postgres, redis, state
 
 
@@ -56,47 +56,47 @@ class Container(containers.DeclarativeContainer):
     # ETL -> Extractors
 
     filmwork_extractor = providers.Singleton(
-        extractors.FilmworkExtractor,
+        filmworks.FilmworkExtractor,
         pg_conn=postgres_connection,
         state=state,
     )
 
     genre_extractor = providers.Singleton(
-        extractors.GenreExtractor,
+        genres.GenreExtractor,
         pg_conn=postgres_connection,
         state=state,
     )
 
     person_extractor = providers.Singleton(
-        extractors.PersonExtractor,
+        persons.PersonExtractor,
         pg_conn=postgres_connection,
         state=state,
     )
 
     # ETL -> Transformers
 
-    filmwork_transformer = providers.Singleton(transformers.FilmworkTransformer)
+    filmwork_transformer = providers.Singleton(filmworks.FilmworkTransformer)
 
-    genre_transformer = providers.Singleton(transformers.GenreTransformer)
+    genre_transformer = providers.Singleton(genres.GenreTransformer)
 
-    person_transformer = providers.Singleton(transformers.PersonTransformer)
+    person_transformer = providers.Singleton(persons.PersonTransformer)
 
     # ETL -> Loaders
 
     filmwork_loader = providers.Singleton(
-        loaders.FilmworkLoader,
+        filmworks.FilmworkLoader,
         elastic_client=elastic_connection,
         state=state,
     )
 
     genre_loader = providers.Singleton(
-        loaders.GenreLoader,
+        genres.GenreLoader,
         elastic_client=elastic_connection,
         state=state,
     )
 
     person_loader = providers.Singleton(
-        loaders.PersonLoader,
+        persons.PersonLoader,
         elastic_client=elastic_connection,
         state=state,
     )

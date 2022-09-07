@@ -6,8 +6,8 @@ from etl.infrastructure.db.state import State
 
 from .extractors import PgExtractor
 from .loaders import ElasticLoader
-from .movies_types import PgSchema
 from .transformers import ElasticTransformer
+from .types import PgSchema
 
 
 @dataclasses.dataclass

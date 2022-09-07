@@ -13,7 +13,7 @@ from .constants import ETL_REFRESH_TIME_SECONDS
 from .containers import Container
 
 if TYPE_CHECKING:
-    from .pipelines import ETLPipeline
+    from etl.domain.pipelines import ETLPipeline
 
 settings = get_settings()
 

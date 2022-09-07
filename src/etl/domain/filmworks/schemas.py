@@ -1,48 +1,21 @@
 import datetime
 import uuid
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
-
-class BasePgSchema(ABC):
-    """Базовая схема данных из Postgres."""
-
-    @classmethod
-    @abstractmethod
-    def from_dict(cls, data: dict):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def to_dict(self) -> dict[str, Any]:
-        raise NotImplementedError()
+from etl.domain.genres.schemas import GenreList
+from etl.domain.schemas import BasePgSchema
 
 
 @dataclass
-class GenreList(BasePgSchema):
-    """Жанр (используется в списке)."""
+class MoviePersonList(BasePgSchema):
+    """Персона (используется в списке фильмов)."""
 
     id: uuid.UUID  # noqa: VNE003
     name: str
 
     @classmethod
-    def from_dict(cls, data: dict) -> "GenreList":
-        return cls(id=data["id"], name=data["name"])
-
-    def to_dict(self) -> dict[str, Any]:
-        dct = {"uuid": self.id, "name": self.name}
-        return dct
-
-
-@dataclass
-class PersonList(BasePgSchema):
-    """Персона (используется в списке)."""
-
-    id: uuid.UUID  # noqa: VNE003
-    name: str
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "PersonList":
+    def from_dict(cls, data: dict) -> "MoviePersonList":
         return cls(id=data["id"], name=data["name"])
 
     def to_dict(self) -> dict[str, Any]:
@@ -68,9 +41,9 @@ class MovieDetail(BasePgSchema):
     writers_names: list[str]
 
     genre: list[GenreList]
-    actors: list[PersonList]
-    writers: list[PersonList]
-    directors: list[PersonList]
+    actors: list[MoviePersonList]
+    writers: list[MoviePersonList]
+    directors: list[MoviePersonList]
 
     @staticmethod
     def _prepare_genres(data: dict) -> dict:
@@ -88,7 +61,7 @@ class MovieDetail(BasePgSchema):
             for person_type in persons_types
         }
         dct = {
-            person_type: [PersonList.from_dict(person) for person in person_data]
+            person_type: [MoviePersonList.from_dict(person) for person in person_data]
             for person_type, person_data in person_data_map.items()
         }
         return dct
@@ -143,22 +116,6 @@ class MovieDetail(BasePgSchema):
 
 
 @dataclass
-class GenreDetail(BasePgSchema):
-    """Жанр у Фильма."""
-
-    id: uuid.UUID  # noqa: VNE003
-    name: str
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "GenreDetail":
-        return cls(id=data["id"], name=data["name"])
-
-    def to_dict(self) -> dict[str, Any]:
-        dct = {"uuid": self.id, "name": self.name}
-        return dct
-
-
-@dataclass
 class MovieList(BasePgSchema):
     """Список Фильмов."""
 
@@ -180,78 +137,5 @@ class MovieList(BasePgSchema):
         dct = {
             "uuid": self.id, "title": self.title, "imdb_rating": self.imdb_rating,
             "age_rating": self.age_rating, "release_date": self.release_date, "access_type": self.access_type,
-        }
-        return dct
-
-
-@dataclass
-class PersonRoleFilm(BasePgSchema):
-    """Роль Персоны со списком Фильмов."""
-
-    role: str
-    films: list[MovieList]
-
-    @staticmethod
-    def _prepare_fields(data: dict) -> dict:
-        role = data["role"]
-        dct = {
-            "role": role,
-            "films": [MovieList.from_dict(film) for film in data[role] or []],
-        }
-        return dct
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "PersonRoleFilm":
-        dct = cls._prepare_fields(data)
-        return cls(**dct)
-
-    def to_dict(self) -> dict[str, Any]:
-        dct = {
-            "role": self.role,
-            "films": [film.to_dict() for film in self.films],
-        }
-        return dct
-
-
-@dataclass
-class PersonFullDetail(BasePgSchema):
-    """Персона (с разбиением фильмов по ролям)."""
-
-    id: uuid.UUID  # noqa: VNE003
-    full_name: str
-    films_ids: list[uuid.UUID]
-    roles: list[PersonRoleFilm]
-
-    @staticmethod
-    def _prepare_roles(data: dict) -> dict:
-        persons_types: tuple[str, ...] = ("actor", "writer", "director")
-        roles = [
-            PersonRoleFilm.from_dict({"role": person_type, person_type: data[person_type]})
-            for person_type in persons_types
-        ]
-        dct = {"roles": roles}
-        return dct
-
-    @staticmethod
-    def _prepare_fields(data: dict) -> dict:
-        dct = {
-            "id": data["id"],
-            "full_name": data["full_name"],
-            "films_ids": data["films_ids"] or [],
-        }
-        dct.update(PersonFullDetail._prepare_roles(data))
-        return dct
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "PersonFullDetail":
-        dct = cls._prepare_fields(data)
-        return cls(**dct)
-
-    def to_dict(self) -> dict[str, Any]:
-        dct = {
-            "uuid": self.id,
-            "full_name": self.full_name,
-            "films_ids": self.films_ids,
-            "roles": [role.to_dict() for role in self.roles],
         }
         return dct
