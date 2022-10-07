@@ -2,14 +2,14 @@ from typing import ClassVar
 
 
 class NetflixETLError(Exception):
-    """Ошибка в сервисе ETL."""
+    """Netflix ETL base exception."""
 
     message: ClassVar[str]
     code: ClassVar[str]
 
 
 class ImproperlyConfiguredError(NetflixETLError):
-    """Неверная конфигурация."""
+    """Service was configured improperly."""
 
     message: ClassVar[str] = "Improperly configured service"
     code: ClassVar[str] = "improperly_configured"

@@ -5,7 +5,7 @@ from .schemas import PersonFullDetail
 
 
 class PersonExtractor(PgExtractor):
-    """`Экстрактор` Участников из Postgres."""
+    """Persons `Extractor`."""
 
     etl_schema_class = PersonFullDetail
 

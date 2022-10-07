@@ -5,7 +5,7 @@ from .schemas import PersonFullDetail
 
 
 class PersonTransformer(ElasticTransformer):
-    """`Преобразователь` данных Персон."""
+    """Persons' data `Transformer`."""
 
     etl_schema_class = PersonFullDetail
 

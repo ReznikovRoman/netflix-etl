@@ -6,19 +6,19 @@ from redis import Redis
 
 
 class BaseStorage:
-    """Базовое хранилище состояний."""
+    """Base state storage."""
 
     @abc.abstractmethod
     def save_state(self, state: dict) -> None:
-        """Сохранение состояния в хранилище."""
+        """Save state in storage."""
 
     @abc.abstractmethod
     def retrieve_state(self) -> dict:
-        """Получение состояния из хранилища."""
+        """Retrieve state from storage."""
 
 
 class RedisStorage(BaseStorage):
-    """Хранилище с использованием Redis."""
+    """Storage with Redis backend."""
 
     REDIS_DATA_KEY: str = "data"
 
@@ -33,17 +33,17 @@ class RedisStorage(BaseStorage):
 
 
 class State:
-    """Состояние ETL пайплайна."""
+    """State of ETL pipeline."""
 
     def __init__(self, storage: BaseStorage):
         self.storage = storage
 
     def set_state(self, key: str, value: Any) -> None:
-        """Установка состояния для определённого ключа."""
+        """Set state for a specific key."""
         state = self.storage.retrieve_state()
         state[key] = value
         self.storage.save_state(state)
 
     def get_state(self, key: str) -> Any:
-        """Получение состояния по определённому ключу."""
+        """Retrieve state by a key."""
         return self.storage.retrieve_state().get(key)

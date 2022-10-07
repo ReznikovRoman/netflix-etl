@@ -8,7 +8,7 @@ from etl.domain.schemas import BasePgSchema
 
 @dataclass
 class PersonRoleFilm(BasePgSchema):
-    """Роль Персоны со списком Фильмов."""
+    """Person role with movie list."""
 
     role: str
     films: list[MovieList]
@@ -37,7 +37,7 @@ class PersonRoleFilm(BasePgSchema):
 
 @dataclass
 class PersonFullDetail(BasePgSchema):
-    """Персона (с разбиением фильмов по ролям)."""
+    """Person full detail (with films by roles)."""
 
     id: uuid.UUID  # noqa: VNE003
     full_name: str

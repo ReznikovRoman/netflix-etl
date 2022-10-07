@@ -5,7 +5,7 @@ from .schemas import MovieDetail
 
 
 class FilmworkExtractor(PgExtractor):
-    """`Экстрактор` Фильмов из Postgres."""
+    """Movies `Extractor`."""
 
     etl_schema_class = MovieDetail
 

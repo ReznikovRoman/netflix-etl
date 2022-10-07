@@ -4,7 +4,7 @@ from .constants import ETL_FILMWORK_INDEX_NAME, ETL_FILMWORK_LOADED_IDS_KEY
 
 
 class FilmworkLoader(ElasticLoader):
-    """`Загрузчик` данных о Фильмах."""
+    """Movies `Loader`."""
 
     etl_loaded_entities_ids_key = ETL_FILMWORK_LOADED_IDS_KEY
 

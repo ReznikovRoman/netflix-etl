@@ -12,7 +12,7 @@ from .types import PgSchema
 
 @dataclasses.dataclass
 class ETLPipeline:
-    """Базовый класс для всех ETL пайплайнов."""
+    """Base class for all ETL pipelines."""
 
     loader: ElasticLoader
     transformer: ElasticTransformer

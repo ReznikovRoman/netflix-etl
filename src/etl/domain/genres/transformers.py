@@ -5,7 +5,7 @@ from .schemas import GenreDetail
 
 
 class GenreTransformer(ElasticTransformer):
-    """`Преобразователь` данных Жанров."""
+    """Genres' data `Transformer`."""
 
     etl_schema_class = GenreDetail
 

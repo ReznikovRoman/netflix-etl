@@ -5,13 +5,13 @@ TPgSchema = TypeVar("TPgSchema", bound="BasePgSchema")
 
 
 class BasePgSchema(ABC):
-    """Базовая схема данных из Postgres."""
+    """Base Postgres schema."""
 
     @classmethod
     @abstractmethod
     def from_dict(cls: Type[TPgSchema], data: dict) -> TPgSchema:
-        """Десериализация объекта."""
+        """Deserialize input data."""
 
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:
-        """Сериализация объекта."""
+        """Serialize object."""

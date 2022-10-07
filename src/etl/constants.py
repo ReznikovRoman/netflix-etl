@@ -1,4 +1,4 @@
 from typing import Final
 
-# Время обновления ETL пайплайна (повторный запуск)
+# ETL pipeline refresh time (rerun)
 ETL_REFRESH_TIME_SECONDS: Final[int] = 30

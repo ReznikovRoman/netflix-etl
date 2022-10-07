@@ -6,7 +6,7 @@ import redis
 
 
 def init_redis(host: str, port: int, decode_responses: bool = True) -> Iterator[redis.Redis]:
-    """Инициализация клиента Redis."""
+    """Setup Redis client."""
     redis_dsl = {
         "host": host,
         "port": port,

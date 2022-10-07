@@ -6,7 +6,7 @@ from etl.infrastructure.db import elastic, postgres, redis, state
 
 
 class Container(containers.DeclarativeContainer):
-    """Контейнер с зависимостями."""
+    """DI container."""
 
     wiring_config = containers.WiringConfiguration(
         modules=[

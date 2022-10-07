@@ -5,7 +5,7 @@ from .schemas import MovieDetail
 
 
 class FilmworkTransformer(ElasticTransformer):
-    """`Преобразователь` данных Фильмов."""
+    """Movies' data `transformer`."""
 
     etl_schema_class = MovieDetail
 

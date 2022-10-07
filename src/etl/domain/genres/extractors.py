@@ -5,7 +5,7 @@ from .schemas import GenreDetail
 
 
 class GenreExtractor(PgExtractor):
-    """`Экстрактор` Жанров из Postgres."""
+    """Genres `Extractor`."""
 
     etl_schema_class = GenreDetail
 

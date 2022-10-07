@@ -8,16 +8,16 @@ from .types import PgSchema
 
 
 class ElasticTransformer(metaclass=RequiredAttributes("etl_schema_class", "es_index_name", "es_type")):
-    """Базовый класс для всех `Преобразователей` данных в нужный формат для Elasticsearch."""
+    """Base class for all `data transformers` to the required format for Elasticsearch."""
 
     etl_schema_class: ClassVar[PgSchema]
 
-    # Настройка документа для Elasticsearch
+    # Elasticsearch document config
     es_index_name: ClassVar[str]
     es_type: ClassVar[str]
 
     def transform(self, data: Iterator[PgSchema]) -> Iterator[dict]:
-        """Преобразование данных в формат, необходимый для загрузки в Elasticsearch."""
+        """Transform data to the required format for Elasticsearch."""
         actions = (
             {"_index": self.es_index_name, "_type": self.es_type, "_id": es_id, "_source": es_source}
             for es_id, es_source in self._prepare_values(data)

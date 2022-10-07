@@ -2,7 +2,7 @@ from etl.common.exceptions import ImproperlyConfiguredError
 
 
 def RequiredAttributes(*required_attrs):  # noqa
-    """Метакласс для указания обязательных атрибутов класса."""
+    """Metaclass for specifying required class attributes."""
 
     class RequiredAttributesMeta(type):
         def __init__(cls, name, bases, attrs) -> None:

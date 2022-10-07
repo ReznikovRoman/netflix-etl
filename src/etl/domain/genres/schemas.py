@@ -7,7 +7,7 @@ from etl.domain.schemas import BasePgSchema
 
 @dataclass
 class GenreList(BasePgSchema):
-    """Жанр (используется в списке)."""
+    """Genre list."""
 
     id: uuid.UUID  # noqa: VNE003
     name: str
@@ -23,7 +23,7 @@ class GenreList(BasePgSchema):
 
 @dataclass
 class GenreDetail(BasePgSchema):
-    """Жанр у фильма."""
+    """Genre detail."""
 
     id: uuid.UUID  # noqa: VNE003
     name: str

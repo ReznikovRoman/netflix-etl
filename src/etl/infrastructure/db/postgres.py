@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 def init_postgres(db_name: str, db_user: str, db_password: str, host: str, port: int) -> Iterator[connection]:
-    """Инициализация клиента PostgreSQL."""
+    """Setup PostgreSQL client."""
     postgres_dsl = {
         "dbname": db_name,
         "user": db_user,
@@ -25,5 +25,5 @@ def init_postgres(db_name: str, db_user: str, db_password: str, host: str, port:
 
 
 def register_postgres_extensions() -> None:
-    """Регистрация расширений к Postgres."""
+    """Register Postgres extensions."""
     psycopg2.extras.register_uuid()

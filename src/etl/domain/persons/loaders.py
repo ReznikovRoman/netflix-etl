@@ -4,7 +4,7 @@ from .constants import ETL_PERSON_INDEX_NAME, ETL_PERSON_LOADED_IDS_KEY
 
 
 class PersonLoader(ElasticLoader):
-    """`Загрузчик` данных о Персонах."""
+    """Persons `Loader`."""
 
     etl_loaded_entities_ids_key = ETL_PERSON_LOADED_IDS_KEY
 

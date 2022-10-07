@@ -5,7 +5,7 @@ from elasticsearch.connection.http_requests import RequestsHttpConnection
 
 
 def init_elastic(host: str, port: int, retry_on_timeout: bool = True) -> Iterator[elasticsearch.Elasticsearch]:
-    """Инициализация клиента Elasticsearch."""
+    """Setup Elasticsearch client."""
     elastic_client = elasticsearch.Elasticsearch(
         hosts=[
             {"host": host, "port": port},

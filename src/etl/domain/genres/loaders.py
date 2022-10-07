@@ -4,7 +4,7 @@ from .constants import ETL_GENRE_INDEX_NAME, ETL_GENRE_LOADED_IDS_KEY
 
 
 class GenreLoader(ElasticLoader):
-    """`Загрузчик` данных о Жанрах."""
+    """Genres `Loader`."""
 
     etl_loaded_entities_ids_key = ETL_GENRE_LOADED_IDS_KEY
 

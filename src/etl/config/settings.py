@@ -14,7 +14,7 @@ class EnvConfig(BaseSettings.Config):
 
 
 class Settings(BaseSettings):
-    """Настройки проекта."""
+    """Project settings."""
 
     # Elasticsearch
     ES_HOST: str

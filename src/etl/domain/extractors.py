@@ -24,21 +24,21 @@ class PgExtractor(
         "sql_all_entities", "sql_entities_to_sync",
     ),
 ):
-    """Базовый класс для всех `экстракторов` данных из Postgres."""
+    """Base class for all `data extractors` from Postgres."""
 
     BATCH_SIZE: ClassVar[int] = 100
 
     etl_schema_class: ClassVar[PgSchemaClass]
 
-    # Ключи в сервисе состояния
+    # Keys in a state storage
     etl_timestamp_key: ClassVar[str]
     etl_loaded_entities_ids_key: ClassVar[str]
 
-    # SQL запросы
+    # SQL queries
     sql_all_entities: ClassVar[SQL]
     sql_entities_to_sync: ClassVar[SQL]
 
-    # настройка запросов
+    # queries config
     entities_to_select_params: ClassVar[list | None] = None
     entity_exclude_time_stamp_param: ClassVar[str] = "time_stamp"
     entity_exclude_field: ClassVar[str] = "id"
@@ -49,11 +49,11 @@ class PgExtractor(
         self._state = state
 
     def extract(self) -> Iterator[PgSchema]:
-        """Основной метод выгрузки данных из Postgres."""
+        """Primary method of extracting data from Postgres."""
         yield from self.load_batches()
 
     def load_batches(self) -> Iterator[PgSchema]:
-        """Получение пачек данных из Postgres."""
+        """Load batches of data from Postgres."""
         entities_ids = self.get_entities_ids_to_update()
 
         params = [entities_ids]
@@ -65,7 +65,7 @@ class PgExtractor(
             yield batch
 
     def get_entities_ids_to_update(self) -> Sequence[str] | tuple[None]:
-        """Получение списка id объектов, которые будут использоваться в ETL процессе."""
+        """Get list of entities ids for ETL pipeline."""
         sql, params = self.get_sql_with_excluded_entities(initial_sql=self.sql_entities_to_sync)
         with self._pg_conn.cursor() as cursor:
             cursor: RealDictCursor
@@ -76,7 +76,7 @@ class PgExtractor(
             return entities_ids
 
     def get_sql_with_excluded_entities(self, initial_sql: SQL) -> tuple[SQL, dict]:
-        """Получение данных для запроса с исключенными объектами."""
+        """Get data for configuring SQL query with excluded entities."""
         loaded_entities_ids = self.get_loaded_entities_ids()
         if loaded_entities_ids:
             initial_sql += f"""
@@ -89,15 +89,15 @@ class PgExtractor(
         return initial_sql, params
 
     def get_loaded_entities_ids(self) -> tuple[str, ...] | None:
-        """Получение id объектов, которые уже были синхронизированы и не будут использоваться в ETL процессе."""
-        # TODO: использовать Redis Set для хранения ID объектов, а не обычную Строку
+        """Get IDs of entities that have been already synced and will not be used in the ETL pipeline."""
+        # TODO: use Redis Set for storing IDs instead of plain python string
         loaded_entities_ids: str | None = self._state.get_state(self.etl_loaded_entities_ids_key)
         if loaded_entities_ids:
             return tuple(loaded_entities_ids.split(","))
         return loaded_entities_ids
 
     def get_etl_timestamp(self) -> datetime.datetime:
-        """Получение времени последней синхронизации сущности."""
+        """Get timestamp of the last entity's sync."""
         timestamp: str | None = self._state.get_state(self.etl_timestamp_key)
         if timestamp is None:
             return datetime.datetime.min
@@ -106,11 +106,11 @@ class PgExtractor(
     def load_data(
         self, sql: SQL, schema_class: PgSchemaClass, params: Sequence[Any] | None = None,
     ) -> Iterator[list[PgSchema]]:
-        """Получение данных с переданными параметрами `params` и SQL `sql`."""
+        """Fetch data using given `params` and `sql`."""
         yield from self._load_data(sql, schema_class, params)
 
     def _get_paginated_results(self, cursor: RealDictCursor, schema_class: PgSchemaClass) -> Iterator[list[PgSchema]]:
-        """Получение данных из Postgres пачками по `BATCH_SIZE`."""
+        """Fetch data from Postgres in `BATCH_SIZE` batches."""
         data: list[PgSchema] = []
         while True:
             results = cursor.fetchmany(self.BATCH_SIZE)
@@ -124,7 +124,7 @@ class PgExtractor(
     def _load_data(
         self, sql: SQL, schema_class: PgSchemaClass, params: Sequence[Any] | None = None,
     ) -> Iterator[list[PgSchema]]:
-        """Получение пагинированных данных из Postgres."""
+        """Fetch paginated data from Postgres."""
         if params is None:
             params = []
 

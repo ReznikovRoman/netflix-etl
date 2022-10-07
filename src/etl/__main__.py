@@ -20,7 +20,7 @@ settings = get_settings()
 
 @inject
 def main(pipelines_to_run: Sequence[ETLPipeline] = Provide[Container.pipelines_to_run]) -> None:
-    """Запуск всех ETL пайплайнов."""
+    """Launch all ETL pipelines."""
     logging.info("Start ETL pipelines")
 
     threads = []

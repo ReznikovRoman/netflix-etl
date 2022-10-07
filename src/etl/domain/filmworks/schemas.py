@@ -9,7 +9,7 @@ from etl.domain.schemas import BasePgSchema
 
 @dataclass
 class MoviePersonList(BasePgSchema):
-    """Персона (используется в списке фильмов)."""
+    """Person (used in the movie list)."""
 
     id: uuid.UUID  # noqa: VNE003
     name: str
@@ -25,7 +25,7 @@ class MoviePersonList(BasePgSchema):
 
 @dataclass
 class MovieDetail(BasePgSchema):
-    """Фильм в онлайн-кинотеатре."""
+    """Movie detail."""
 
     id: uuid.UUID  # noqa: VNE003
     imdb_rating: float
@@ -117,7 +117,7 @@ class MovieDetail(BasePgSchema):
 
 @dataclass
 class MovieList(BasePgSchema):
-    """Список Фильмов."""
+    """Movie list."""
 
     id: uuid.UUID  # noqa: VNE003
     title: str

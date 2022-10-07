@@ -9,7 +9,7 @@ from etl.utils import RequiredAttributes
 
 
 class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", "es_index", "es_index_name")):
-    """`Загрузчик` данных в Elasticsearch."""
+    """Data `loader` to Elasticsearch."""
 
     etl_loaded_entities_ids_key: ClassVar[str]
 
@@ -24,7 +24,7 @@ class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", 
         self._state = state
 
     def load(self, data: Iterator[dict]) -> None:
-        """Загрузка данных в Elasticsearch."""
+        """Load data to Elasticsearch."""
         data = list(data)
 
         self.create_index()
@@ -33,9 +33,9 @@ class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", 
         self.post_load(data=data)
 
     def create_index(self):
-        """Создание индекса в Elasticsearch.
+        """Create index in Elasticsearch.
 
-        Если индекс уже создан, то ошибки будут проигнорированы.
+        If index has been already created, errors will be ignored.
         """
         self._elastic_client.indices.create(
             index=self.es_index_name,
@@ -45,14 +45,17 @@ class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", 
         )
 
     def update_index(self, data: Iterator[dict]) -> tuple[int, int | list]:
-        """Обновление документов в индексе."""
+        """Update documents in the index."""
         return helpers.bulk(self._elastic_client, data)
 
     def post_load(self, *args, **kwargs) -> None:
-        """Сигнал, вызываемый после загрузки данных."""
+        """`Post-load` signal.
+
+        Method is called after data upload.
+        """
         self.update_ids_in_state(kwargs["data"])
 
     def update_ids_in_state(self, data) -> None:
-        """Обновление текущего состояния с помощью ID загруженных документов."""
+        """Update current state with IDs of uploaded documents."""
         ids = ",".join([str(entity_data["_source"][self.entity_id_field]) for entity_data in data])
         self._state.set_state(self.etl_loaded_entities_ids_key, ids)
