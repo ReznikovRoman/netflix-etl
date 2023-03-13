@@ -11,7 +11,7 @@ from etl.domain.schemas import BasePgSchema
 class MoviePersonList(BasePgSchema):
     """Person (used in the movie list)."""
 
-    id: uuid.UUID  # noqa: VNE003
+    id: uuid.UUID
     name: str
 
     @classmethod
@@ -19,15 +19,14 @@ class MoviePersonList(BasePgSchema):
         return cls(id=data["id"], name=data["name"])
 
     def to_dict(self) -> dict[str, Any]:
-        dct = {"uuid": self.id, "full_name": self.name}
-        return dct
+        return {"uuid": self.id, "full_name": self.name}
 
 
 @dataclass
 class MovieDetail(BasePgSchema):
     """Movie detail."""
 
-    id: uuid.UUID  # noqa: VNE003
+    id: uuid.UUID
     imdb_rating: float
     title: str
     description: str
@@ -48,10 +47,9 @@ class MovieDetail(BasePgSchema):
     @staticmethod
     def _prepare_genres(data: dict) -> dict:
         genres: list[dict] = data["genre"] or []
-        dct = {
+        return {
             "genre": [GenreList.from_dict(genre) for genre in genres],
         }
-        return dct
 
     @staticmethod
     def _prepare_persons(data: dict) -> dict:
@@ -60,11 +58,10 @@ class MovieDetail(BasePgSchema):
             person_type: data[person_type] or []
             for person_type in persons_types
         }
-        dct = {
+        return {
             person_type: [MoviePersonList.from_dict(person) for person in person_data]
             for person_type, person_data in person_data_map.items()
         }
-        return dct
 
     @staticmethod
     def _prepare_fields(data: dict) -> dict:
@@ -92,11 +89,10 @@ class MovieDetail(BasePgSchema):
 
     def _serialize_persons(self) -> dict:
         persons_types: tuple[str, ...] = ("actors", "writers", "directors")
-        dct = {
+        return {
             persons_type: [person.to_dict() for person in getattr(self, persons_type)]
             for persons_type in persons_types
         }
-        return dct
 
     def to_dict(self) -> dict[str, Any]:
         dct = {
@@ -119,7 +115,7 @@ class MovieDetail(BasePgSchema):
 class MovieList(BasePgSchema):
     """Movie list."""
 
-    id: uuid.UUID  # noqa: VNE003
+    id: uuid.UUID
     title: str
     imdb_rating: float
     age_rating: str
@@ -134,8 +130,7 @@ class MovieList(BasePgSchema):
         )
 
     def to_dict(self) -> dict[str, Any]:
-        dct = {
+        return {
             "uuid": self.id, "title": self.title, "imdb_rating": self.imdb_rating,
             "age_rating": self.age_rating, "release_date": self.release_date, "access_type": self.access_type,
         }
-        return dct

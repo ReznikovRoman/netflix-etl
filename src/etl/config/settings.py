@@ -9,7 +9,7 @@ class EnvConfig(BaseSettings.Config):
     @classmethod
     def prepare_field(cls, field) -> None:
         if "env_names" in field.field_info.extra:
-            return
+            return None
         return super().prepare_field(field)
 
 
@@ -38,6 +38,6 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> "Settings":
     return Settings()

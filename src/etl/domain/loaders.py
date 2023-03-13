@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from typing import ClassVar, Iterator
+from typing import TYPE_CHECKING, ClassVar
 
 from elasticsearch import Elasticsearch, helpers
 
-from etl.infrastructure.db.state import State
 from etl.utils import RequiredAttributes
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    from etl.infrastructure.db.state import State
 
 
 class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", "es_index", "es_index_name")):

@@ -9,7 +9,7 @@ from etl.domain.schemas import BasePgSchema
 class GenreList(BasePgSchema):
     """Genre list."""
 
-    id: uuid.UUID  # noqa: VNE003
+    id: uuid.UUID
     name: str
 
     @classmethod
@@ -17,15 +17,14 @@ class GenreList(BasePgSchema):
         return cls(id=data["id"], name=data["name"])
 
     def to_dict(self) -> dict[str, Any]:
-        dct = {"uuid": self.id, "name": self.name}
-        return dct
+        return {"uuid": self.id, "name": self.name}
 
 
 @dataclass
 class GenreDetail(BasePgSchema):
     """Genre detail."""
 
-    id: uuid.UUID  # noqa: VNE003
+    id: uuid.UUID
     name: str
 
     @classmethod
@@ -33,5 +32,4 @@ class GenreDetail(BasePgSchema):
         return cls(id=data["id"], name=data["name"])
 
     def to_dict(self) -> dict[str, Any]:
-        dct = {"uuid": self.id, "name": self.name}
-        return dct
+        return {"uuid": self.id, "name": self.name}

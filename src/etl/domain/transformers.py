@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import ClassVar, Iterator
+from typing import TYPE_CHECKING, ClassVar
 
 from etl.utils import RequiredAttributes
 
-from .types import PgSchema
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    from .types import PgSchema
 
 
 class ElasticTransformer(metaclass=RequiredAttributes("etl_schema_class", "es_index_name", "es_type")):

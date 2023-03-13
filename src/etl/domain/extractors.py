@@ -2,16 +2,21 @@ from __future__ import annotations
 
 import datetime
 import logging
-from typing import TYPE_CHECKING, Any, ClassVar, Iterator, Sequence
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import psycopg2
-from psycopg2._psycopg import connection
-from psycopg2.extras import RealDictCursor
 
-from etl.infrastructure.db.state import State
 from etl.utils import RequiredAttributes
 
-from .types import PgSchema, PgSchemaClass
+if TYPE_CHECKING:
+    from collections.abc import Iterator, Sequence
+
+    from psycopg2._psycopg import connection
+    from psycopg2.extras import RealDictCursor
+
+    from etl.infrastructure.db.state import State
+
+    from .types import PgSchema, PgSchemaClass
 
 if TYPE_CHECKING:
     SQL = str
@@ -61,14 +66,13 @@ class PgExtractor(
             params.extend(self.entities_to_select_params)
 
         batches = self.load_data(self.sql_all_entities, self.etl_schema_class, params=params)
-        for batch in batches:
-            yield batch
+        yield from batches
 
     def get_entities_ids_to_update(self) -> Sequence[str] | tuple[None]:
         """Get list of entities ids for ETL pipeline."""
         sql, params = self.get_sql_with_excluded_entities(initial_sql=self.sql_entities_to_sync)
+        cursor: RealDictCursor
         with self._pg_conn.cursor() as cursor:
-            cursor: RealDictCursor
             cursor.execute(query=sql, vars=params)
             entities_ids = tuple([row[self.entity_id_field] for row in cursor.fetchall()])
             if not len(entities_ids):
@@ -101,7 +105,7 @@ class PgExtractor(
         timestamp: str | None = self._state.get_state(self.etl_timestamp_key)
         if timestamp is None:
             return datetime.datetime.min
-        return datetime.datetime.fromtimestamp(int(timestamp))
+        return datetime.datetime.fromtimestamp(int(timestamp), tz=datetime.timezone.utc)
 
     def load_data(
         self, sql: SQL, schema_class: PgSchemaClass, params: Sequence[Any] | None = None,

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from threading import Thread
 from time import sleep
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 from dependency_injector.wiring import Provide, inject
 
@@ -13,6 +13,8 @@ from .constants import ETL_REFRESH_TIME_SECONDS
 from .containers import Container
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from etl.domain.pipelines import ETLPipeline
 
 settings = get_settings()

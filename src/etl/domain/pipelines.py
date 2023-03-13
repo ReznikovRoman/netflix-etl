@@ -1,6 +1,6 @@
 import dataclasses
 import datetime
-from typing import Iterator
+from collections.abc import Iterator
 
 from etl.infrastructure.db.state import State
 
@@ -39,7 +39,7 @@ class ETLPipeline:
         self.remove_ids_from_state()
 
     def update_timestamp_state(self) -> None:
-        timestamp = str(datetime.datetime.now().timestamp()).rsplit(".", 1)[0]
+        timestamp = str(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()).rsplit(".", 1)[0]
         self.state.set_state(self.extractor.etl_timestamp_key, timestamp)
 
     def remove_ids_from_state(self):

@@ -1,4 +1,4 @@
-from typing import Iterator
+from collections.abc import Iterator
 
 import elasticsearch
 from elasticsearch.connection.http_requests import RequestsHttpConnection

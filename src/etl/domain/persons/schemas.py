@@ -16,11 +16,10 @@ class PersonRoleFilm(BasePgSchema):
     @staticmethod
     def _prepare_fields(data: dict) -> dict:
         role = data["role"]
-        dct = {
+        return {
             "role": role,
             "films": [MovieList.from_dict(film) for film in data[role] or []],
         }
-        return dct
 
     @classmethod
     def from_dict(cls, data: dict) -> "PersonRoleFilm":
@@ -28,18 +27,17 @@ class PersonRoleFilm(BasePgSchema):
         return cls(**dct)
 
     def to_dict(self) -> dict[str, Any]:
-        dct = {
+        return {
             "role": self.role,
             "films": [film.to_dict() for film in self.films],
         }
-        return dct
 
 
 @dataclass
 class PersonFullDetail(BasePgSchema):
     """Person full detail (with films by roles)."""
 
-    id: uuid.UUID  # noqa: VNE003
+    id: uuid.UUID
     full_name: str
     films_ids: list[uuid.UUID]
     roles: list[PersonRoleFilm]
@@ -51,8 +49,7 @@ class PersonFullDetail(BasePgSchema):
             PersonRoleFilm.from_dict({"role": person_type, person_type: data[person_type]})
             for person_type in persons_types
         ]
-        dct = {"roles": roles}
-        return dct
+        return {"roles": roles}
 
     @staticmethod
     def _prepare_fields(data: dict) -> dict:
@@ -70,10 +67,9 @@ class PersonFullDetail(BasePgSchema):
         return cls(**dct)
 
     def to_dict(self) -> dict[str, Any]:
-        dct = {
+        return {
             "uuid": self.id,
             "full_name": self.full_name,
             "films_ids": self.films_ids,
             "roles": [role.to_dict() for role in self.roles],
         }
-        return dct

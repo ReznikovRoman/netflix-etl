@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from psycopg2._psycopg import connection
 
 
