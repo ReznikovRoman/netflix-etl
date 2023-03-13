@@ -4,11 +4,12 @@ PIP_COMPILE := cd $(REQUIREMENTS_DIR) && pip-compile $(PIP_COMPILE_ARGS)
 
 .PHONY: fix
 fix:
+	ruff check . --fix
 	isort .
 
 .PHONY: lint
 lint:
-	flake8
+	ruff check .
 	isort -qc .
 
 .PHONY: compile-requirements
@@ -23,5 +24,9 @@ compile-requirements:
 sync-requirements:
 	pip install -U pip-tools
 	cd $(REQUIREMENTS_DIR) && pip-sync requirements.txt requirements.*.txt
+
+.PHONY: pip-outdated
+pip-outdated:
+	pip list --outdated
 
 .DEFAULT_GOAL :=

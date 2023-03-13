@@ -74,9 +74,9 @@ platformdirs==2.5.1 \
     --hash=sha256:7535e70dfa32e84d4b34996ea99c5e432fa29a708d0f4e394bbcb2a8faa4f16d \
     --hash=sha256:bcae7cab893c2d310a711b70b24efb93334febe65f8de776ee320b517471e227
     # via virtualenv
-pre-commit==2.17.0 \
-    --hash=sha256:725fa7459782d7bec5ead072810e47351de01709be838c2ce1726b9591dad616 \
-    --hash=sha256:c1a8040ff15ad3d648c70cc3e55b93e4d2d5b687320955505587fd79bbaed06a
+pre-commit==3.1.1 \
+    --hash=sha256:b80254e60668e1dd1f5c03a1c9e0413941d61f568a57d745add265945f65bfe8 \
+    --hash=sha256:d63e6537f9252d99f65755ae5b79c989b462d511ebbc481b561db6a297e1e865
     # via -r requirements.dev.in
 prompt-toolkit==3.0.29 \
     --hash=sha256:62291dad495e665fca0bda814e342c69952086afb0f4094d0893d357e5c78752 \
@@ -139,10 +139,6 @@ stack-data==0.2.0 \
     --hash=sha256:45692d41bd633a9503a5195552df22b583caf16f0b27c4e58c98d88c8b648e12 \
     --hash=sha256:999762f9c3132308789affa03e9271bbbe947bf78311851f4d485d8402ed858e
     # via ipython
-toml==0.10.2 \
-    --hash=sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b \
-    --hash=sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f
-    # via pre-commit
 tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
     --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
