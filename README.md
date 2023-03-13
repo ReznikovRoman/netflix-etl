@@ -1,6 +1,10 @@
 # Netflix ETL
 _Netflix_ ETL pipelines for syncing data between Postgres and Elasticsearch.
 
+## Stack
+[Postgres](https://www.postgresql.org/), [Elasticsearch](https://www.elastic.co/what-is/elasticsearch),
+[Redis](https://redis.io/)
+
 ## Services
 - Netflix Admin:
   - Online-cinema management panel. Admins can manage films, genres, actors/directors/writers/...
@@ -40,7 +44,6 @@ docker-compose files:
 To run docker containers, you need to create a `.env` file in the root directory.
 
 **`.env` example:**
-
 ```dotenv
 ENV=.env
 
