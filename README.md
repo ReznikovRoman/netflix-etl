@@ -85,13 +85,13 @@ NE_ES_RETRY_ON_TIMEOUT=1
 
 Locally:
 ```shell
-docker-compose build
-docker-compose up
+docker compose build
+docker compose up
 ```
 
 **To fill DB with test data**
 ```shell
-docker-compose run --rm server bash -c "cd /app/scripts/load_db && python load_data.py"
+docker compose run --rm server bash -c "cd /app/scripts/load_db && python load_data.py"
 ```
 
 ## Development
