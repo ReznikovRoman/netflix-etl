@@ -105,7 +105,7 @@ class PgExtractor(
         timestamp: str | None = self._state.get_state(self.etl_timestamp_key)
         if timestamp is None:
             return datetime.datetime.min
-        return datetime.datetime.fromtimestamp(int(timestamp), tz=datetime.timezone.utc)
+        return datetime.datetime.fromtimestamp(int(timestamp), tz=datetime.UTC)
 
     def load_data(
         self, sql: SQL, schema_class: PgSchemaClass, params: Sequence[Any] | None = None,

@@ -49,7 +49,7 @@ ENV=.env
 DJANGO_SETTINGS_MODULE=netflix.settings
 DJANGO_CONFIGURATION=External
 DJANGO_ADMIN=django-cadmin
-DJANGO_SECRET_KEY=7)%31(changeme12@g87_h8vthi4dj=1pjp^ysv*tnm_fx$fw6
+DJANGO_SECRET_KEY=7)%31(changeme12@g87_h8vthi4dj=1pjp^ysv*tnm_fx$$fw6
 ALLOWED_HOSTS=localhost,127.0.0.1
 
 # Project
