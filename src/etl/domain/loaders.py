@@ -1,18 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from elasticsearch import Elasticsearch, helpers
 
-from etl.utils import RequiredAttributes
-
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterable, Iterator
 
     from etl.infrastructure.db.state import State
 
 
-class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", "es_index", "es_index_name")):
+class ElasticLoader:
     """Data `loader` to Elasticsearch."""
 
     etl_loaded_entities_ids_key: ClassVar[str]
@@ -27,16 +25,16 @@ class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", 
         self._elastic_client = elastic_client
         self._state = state
 
-    def load(self, data: Iterator[dict]) -> None:
+    def load(self, data: Iterator[dict[str, Any]]) -> None:
         """Load data to Elasticsearch."""
-        data = list(data)
+        _data = list(data)
 
         self.create_index()
-        self.update_index(data)
+        self.update_index(_data)
 
-        self.post_load(data=data)
+        self.post_load(data=_data)
 
-    def create_index(self):
+    def create_index(self) -> None:
         """Create index in Elasticsearch.
 
         If index has been already created, errors will be ignored.
@@ -48,18 +46,18 @@ class ElasticLoader(metaclass=RequiredAttributes("etl_loaded_entities_ids_key", 
             timeout=self.es_timeout,
         )
 
-    def update_index(self, data: Iterator[dict]) -> tuple[int, int | list]:
+    def update_index(self, data: list[dict[str, Any]]) -> tuple[int, int | list]:
         """Update documents in the index."""
         return helpers.bulk(self._elastic_client, data)
 
-    def post_load(self, *args, **kwargs) -> None:
+    def post_load(self, *args: Any, **kwargs: Any) -> None:
         """`Post-load` signal.
 
         Method is called after data upload.
         """
         self.update_ids_in_state(kwargs["data"])
 
-    def update_ids_in_state(self, data) -> None:
+    def update_ids_in_state(self, data: Iterable[dict[str, Any]]) -> None:
         """Update current state with IDs of uploaded documents."""
         ids = ",".join([str(entity_data["_source"][self.entity_id_field]) for entity_data in data])
         self._state.set_state(self.etl_loaded_entities_ids_key, ids)

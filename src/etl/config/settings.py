@@ -1,13 +1,19 @@
+from __future__ import annotations
+
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 from pydantic import Field
 from pydantic.env_settings import BaseSettings
+
+if TYPE_CHECKING:
+    from pydantic.fields import ModelField
 
 
 class EnvConfig(BaseSettings.Config):
 
     @classmethod
-    def prepare_field(cls, field) -> None:
+    def prepare_field(cls, field: ModelField) -> None:
         if "env_names" in field.field_info.extra:
             return None
         return super().prepare_field(field)

@@ -1,4 +1,8 @@
 -c requirements.txt
 
-ruff==0.0.254
+ruff==0.0.257
 isort==5.10.1
+
+mypy==1.1.1
+types-redis==4.5.1.5
+types-psycopg2==2.9.21.8

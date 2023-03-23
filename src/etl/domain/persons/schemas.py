@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from etl.domain.filmworks.schemas import MovieList
-from etl.domain.schemas import BasePgSchema
+from etl.domain.schemas import BasePgSchema, PgSchema
 
 
 @dataclass
@@ -34,10 +34,9 @@ class PersonRoleFilm(BasePgSchema):
 
 
 @dataclass
-class PersonFullDetail(BasePgSchema):
+class PersonFullDetail(PgSchema):
     """Person full detail (with films by roles)."""
 
-    id: uuid.UUID
     full_name: str
     films_ids: list[uuid.UUID]
     roles: list[PersonRoleFilm]

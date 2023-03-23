@@ -8,7 +8,7 @@ from psycopg2.extras import RealDictCursor
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from psycopg2._psycopg import connection
+    from psycopg2.extensions import connection
 
 
 def init_postgres(db_name: str, db_user: str, db_password: str, host: str, port: int) -> Iterator[connection]:
@@ -20,7 +20,7 @@ def init_postgres(db_name: str, db_user: str, db_password: str, host: str, port:
         "host": host,
         "port": port,
     }
-    postgres_connection: connection = psycopg2.connect(**postgres_dsl, cursor_factory=RealDictCursor)
+    postgres_connection = psycopg2.connect(**postgres_dsl, cursor_factory=RealDictCursor)  # type: ignore[call-overload]
     register_postgres_extensions()
     yield postgres_connection
     postgres_connection.close()

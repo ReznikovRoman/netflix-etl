@@ -1,3 +1,5 @@
+import dataclasses
+import uuid
 from abc import ABC, abstractmethod
 from typing import Any, TypeVar
 
@@ -15,3 +17,10 @@ class BasePgSchema(ABC):
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:
         """Serialize object."""
+
+
+@dataclasses.dataclass
+class PgSchema(BasePgSchema, ABC):
+    """Postgres schema with an ID."""
+
+    id: uuid.UUID

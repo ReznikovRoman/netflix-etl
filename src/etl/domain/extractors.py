@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import datetime
 import logging
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import psycopg2
-
-from etl.utils import RequiredAttributes
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
@@ -16,24 +14,18 @@ if TYPE_CHECKING:
 
     from etl.infrastructure.db.state import State
 
-    from .types import PgSchema, PgSchemaClass
+    from .schemas import PgSchema
 
 if TYPE_CHECKING:
     SQL = str
 
 
-class PgExtractor(
-    metaclass=RequiredAttributes(
-        "etl_schema_class",
-        "etl_timestamp_key", "etl_loaded_entities_ids_key",
-        "sql_all_entities", "sql_entities_to_sync",
-    ),
-):
+class PgExtractor:
     """Base class for all `data extractors` from Postgres."""
 
     BATCH_SIZE: ClassVar[int] = 100
 
-    etl_schema_class: ClassVar[PgSchemaClass]
+    etl_schema_class: ClassVar[type[PgSchema]]
 
     # Keys in a state storage
     etl_timestamp_key: ClassVar[str]
@@ -53,11 +45,11 @@ class PgExtractor(
         self._pg_conn = pg_conn
         self._state = state
 
-    def extract(self) -> Iterator[PgSchema]:
+    def extract(self) -> Iterator[list[PgSchema]]:
         """Primary method of extracting data from Postgres."""
         yield from self.load_batches()
 
-    def load_batches(self) -> Iterator[PgSchema]:
+    def load_batches(self) -> Iterator[list[PgSchema]]:
         """Load batches of data from Postgres."""
         entities_ids = self.get_entities_ids_to_update()
 
@@ -71,8 +63,7 @@ class PgExtractor(
     def get_entities_ids_to_update(self) -> Sequence[str] | tuple[None]:
         """Get list of entities ids for ETL pipeline."""
         sql, params = self.get_sql_with_excluded_entities(initial_sql=self.sql_entities_to_sync)
-        cursor: RealDictCursor
-        with self._pg_conn.cursor() as cursor:
+        with cast("RealDictCursor", self._pg_conn.cursor()) as cursor:
             cursor.execute(query=sql, vars=params)
             entities_ids = tuple([row[self.entity_id_field] for row in cursor.fetchall()])
             if not len(entities_ids):
@@ -95,10 +86,10 @@ class PgExtractor(
     def get_loaded_entities_ids(self) -> tuple[str, ...] | None:
         """Get IDs of entities that have been already synced and will not be used in the ETL pipeline."""
         # TODO: use Redis Set for storing IDs instead of plain python string
-        loaded_entities_ids: str | None = self._state.get_state(self.etl_loaded_entities_ids_key)
-        if loaded_entities_ids:
-            return tuple(loaded_entities_ids.split(","))
-        return loaded_entities_ids
+        loaded_entities_ids = cast("str | None", self._state.get_state(self.etl_loaded_entities_ids_key))
+        if not loaded_entities_ids:
+            return None
+        return tuple(loaded_entities_ids.split(","))
 
     def get_etl_timestamp(self) -> datetime.datetime:
         """Get timestamp of the last entity's sync."""
@@ -108,12 +99,12 @@ class PgExtractor(
         return datetime.datetime.fromtimestamp(int(timestamp), tz=datetime.UTC)
 
     def load_data(
-        self, sql: SQL, schema_class: PgSchemaClass, params: Sequence[Any] | None = None,
+        self, sql: SQL, schema_class: type[PgSchema], params: Sequence[Any] | None = None,
     ) -> Iterator[list[PgSchema]]:
         """Fetch data using given `params` and `sql`."""
         yield from self._load_data(sql, schema_class, params)
 
-    def _get_paginated_results(self, cursor: RealDictCursor, schema_class: PgSchemaClass) -> Iterator[list[PgSchema]]:
+    def _get_paginated_results(self, cursor: RealDictCursor, schema_class: type[PgSchema]) -> Iterator[list[PgSchema]]:
         """Fetch data from Postgres in `BATCH_SIZE` batches."""
         data: list[PgSchema] = []
         while True:
@@ -126,19 +117,18 @@ class PgExtractor(
             data = []
 
     def _load_data(
-        self, sql: SQL, schema_class: PgSchemaClass, params: Sequence[Any] | None = None,
+        self, sql: SQL, schema_class: type[PgSchema], params: Sequence[Any] | None = None,
     ) -> Iterator[list[PgSchema]]:
         """Fetch paginated data from Postgres."""
         if params is None:
             params = []
-
-        cursor: RealDictCursor = self._pg_conn.cursor()
+        cursor = cast("RealDictCursor", self._pg_conn.cursor())
         try:
             cursor.execute(sql, vars=params)
-        except psycopg2.OperationalError:
-            logging.error("Postgres operational error.")
+        except psycopg2.OperationalError as exc:
+            logging.error("Postgres operational error. Exception: `%s`", exc)
             raise
         else:
             yield from self._get_paginated_results(cursor, schema_class)
         finally:
-            cursor.close()
+            cursor.close()  # type: ignore[no-untyped-call]

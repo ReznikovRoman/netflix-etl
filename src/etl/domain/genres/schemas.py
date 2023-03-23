@@ -1,15 +1,13 @@
-import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from etl.domain.schemas import BasePgSchema
+from etl.domain.schemas import PgSchema
 
 
 @dataclass
-class GenreList(BasePgSchema):
+class GenreList(PgSchema):
     """Genre list."""
 
-    id: uuid.UUID
     name: str
 
     @classmethod
@@ -21,10 +19,9 @@ class GenreList(BasePgSchema):
 
 
 @dataclass
-class GenreDetail(BasePgSchema):
+class GenreDetail(PgSchema):
     """Genre detail."""
 
-    id: uuid.UUID
     name: str
 
     @classmethod

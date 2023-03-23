@@ -1,17 +1,15 @@
 import datetime
-import uuid
 from dataclasses import dataclass
 from typing import Any
 
 from etl.domain.genres.schemas import GenreList
-from etl.domain.schemas import BasePgSchema
+from etl.domain.schemas import PgSchema
 
 
 @dataclass
-class MoviePersonList(BasePgSchema):
+class MoviePersonList(PgSchema):
     """Person (used in the movie list)."""
 
-    id: uuid.UUID
     name: str
 
     @classmethod
@@ -23,10 +21,9 @@ class MoviePersonList(BasePgSchema):
 
 
 @dataclass
-class MovieDetail(BasePgSchema):
+class MovieDetail(PgSchema):
     """Movie detail."""
 
-    id: uuid.UUID
     imdb_rating: float
     title: str
     description: str
@@ -54,7 +51,7 @@ class MovieDetail(BasePgSchema):
     @staticmethod
     def _prepare_persons(data: dict) -> dict:
         persons_types: tuple[str, ...] = ("actors", "writers", "directors")
-        person_data_map: dict[str, dict] = {
+        person_data_map: dict[str, list[dict]] = {
             person_type: data[person_type] or []
             for person_type in persons_types
         }
@@ -112,10 +109,9 @@ class MovieDetail(BasePgSchema):
 
 
 @dataclass
-class MovieList(BasePgSchema):
+class MovieList(PgSchema):
     """Movie list."""
 
-    id: uuid.UUID
     title: str
     imdb_rating: float
     age_rating: str

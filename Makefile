@@ -9,6 +9,7 @@ fix:
 
 .PHONY: lint
 lint:
+	mypy --config-file pyproject.toml ./
 	ruff check .
 	isort -qc .
 

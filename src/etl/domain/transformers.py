@@ -1,25 +1,23 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
-
-from etl.utils import RequiredAttributes
+from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from .types import PgSchema
+    from .schemas import PgSchema
 
 
-class ElasticTransformer(metaclass=RequiredAttributes("etl_schema_class", "es_index_name", "es_type")):
+class ElasticTransformer:
     """Base class for all `data transformers` to the required format for Elasticsearch."""
 
-    etl_schema_class: ClassVar[PgSchema]
+    etl_schema_class: ClassVar[type[PgSchema]]
 
     # Elasticsearch document config
     es_index_name: ClassVar[str]
     es_type: ClassVar[str]
 
-    def transform(self, data: Iterator[PgSchema]) -> Iterator[dict]:
+    def transform(self, data: list[PgSchema]) -> Iterator[dict[str, Any]]:
         """Transform data to the required format for Elasticsearch."""
         actions = (
             {"_index": self.es_index_name, "_type": self.es_type, "_id": es_id, "_source": es_source}
@@ -27,7 +25,7 @@ class ElasticTransformer(metaclass=RequiredAttributes("etl_schema_class", "es_in
         )
         yield from actions
 
-    def _prepare_values(self, data: Iterator[PgSchema]) -> Iterator[tuple[str, dict]]:
+    def _prepare_values(self, data: list[PgSchema]) -> Iterator[tuple[str, dict]]:
         for entity in data:
             yield self._prepare_es_id(entity), self._prepare_entity(entity)
 
@@ -37,4 +35,4 @@ class ElasticTransformer(metaclass=RequiredAttributes("etl_schema_class", "es_in
 
     @staticmethod
     def _prepare_es_id(entity: PgSchema) -> str:
-        return entity.id
+        return str(entity.id)
