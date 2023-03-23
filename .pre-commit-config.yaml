@@ -47,4 +47,5 @@ repos:
           types-redis,
           types-psycopg2,
           uvicorn,
+          ipython,
         ]

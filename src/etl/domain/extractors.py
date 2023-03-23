@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from psycopg2._psycopg import connection
     from psycopg2.extras import RealDictCursor
 
-    from etl.infrastructure.db.state import State
+    from etl.infrastructure.db.storage import BaseStorage
 
     from .schemas import PgSchema
 
@@ -41,9 +41,9 @@ class PgExtractor:
     entity_exclude_field: ClassVar[str] = "id"
     entity_id_field: ClassVar[str] = "id"
 
-    def __init__(self, pg_conn: connection, state: State):
+    def __init__(self, pg_conn: connection, storage: BaseStorage) -> None:
         self._pg_conn = pg_conn
-        self._state = state
+        self._storage = storage
 
     def extract(self) -> Iterator[list[PgSchema]]:
         """Primary method of extracting data from Postgres."""
@@ -85,15 +85,14 @@ class PgExtractor:
 
     def get_loaded_entities_ids(self) -> tuple[str, ...] | None:
         """Get IDs of entities that have been already synced and will not be used in the ETL pipeline."""
-        # TODO: use Redis Set for storing IDs instead of plain python string
-        loaded_entities_ids = cast("str | None", self._state.get_state(self.etl_loaded_entities_ids_key))
+        loaded_entities_ids = self._storage.retrieve_list(self.etl_loaded_entities_ids_key)
         if not loaded_entities_ids:
             return None
-        return tuple(loaded_entities_ids.split(","))
+        return tuple(loaded_entities_ids)
 
     def get_etl_timestamp(self) -> datetime.datetime:
         """Get timestamp of the last entity's sync."""
-        timestamp: str | None = self._state.get_state(self.etl_timestamp_key)
+        timestamp = self._storage.retrieve(self.etl_timestamp_key)
         if timestamp is None:
             return datetime.datetime.min
         return datetime.datetime.fromtimestamp(int(timestamp), tz=datetime.UTC)

@@ -7,7 +7,7 @@ from elasticsearch import Elasticsearch, helpers
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
-    from etl.infrastructure.db.state import State
+    from etl.infrastructure.db.storage import BaseStorage
 
 
 class ElasticLoader:
@@ -21,9 +21,9 @@ class ElasticLoader:
 
     entity_id_field: ClassVar[str] = "uuid"
 
-    def __init__(self, elastic_client: Elasticsearch, state: State):
+    def __init__(self, elastic_client: Elasticsearch, storage: BaseStorage):
         self._elastic_client = elastic_client
-        self._state = state
+        self._storage = storage
 
     def load(self, data: Iterator[dict[str, Any]]) -> None:
         """Load data to Elasticsearch."""
@@ -59,5 +59,5 @@ class ElasticLoader:
 
     def update_ids_in_state(self, data: Iterable[dict[str, Any]]) -> None:
         """Update current state with IDs of uploaded documents."""
-        ids = ",".join([str(entity_data["_source"][self.entity_id_field]) for entity_data in data])
-        self._state.set_state(self.etl_loaded_entities_ids_key, ids)
+        ids = [str(entity_data["_source"][self.entity_id_field]) for entity_data in data]
+        self._storage.save_list(self.etl_loaded_entities_ids_key, *ids)

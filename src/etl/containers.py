@@ -2,7 +2,7 @@ from dependency_injector import containers, providers
 
 from etl.config.logging import configure_logger
 from etl.domain import filmworks, genres, persons, pipelines
-from etl.infrastructure.db import elastic, postgres, redis, state
+from etl.infrastructure.db import elastic, postgres, redis, storage
 
 
 class Container(containers.DeclarativeContainer):
@@ -44,13 +44,8 @@ class Container(containers.DeclarativeContainer):
     )
 
     redis_storage = providers.Singleton(
-        state.RedisStorage,
+        storage.RedisStorage,
         redis_client=redis_connection,
-    )
-
-    state = providers.Singleton(
-        state.State,
-        storage=redis_storage,
     )
 
     # ETL -> Extractors
@@ -58,19 +53,19 @@ class Container(containers.DeclarativeContainer):
     filmwork_extractor = providers.Singleton(
         filmworks.FilmworkExtractor,
         pg_conn=postgres_connection,
-        state=state,
+        storage=redis_storage,
     )
 
     genre_extractor = providers.Singleton(
         genres.GenreExtractor,
         pg_conn=postgres_connection,
-        state=state,
+        storage=redis_storage,
     )
 
     person_extractor = providers.Singleton(
         persons.PersonExtractor,
         pg_conn=postgres_connection,
-        state=state,
+        storage=redis_storage,
     )
 
     # ETL -> Transformers
@@ -86,19 +81,19 @@ class Container(containers.DeclarativeContainer):
     filmwork_loader = providers.Singleton(
         filmworks.FilmworkLoader,
         elastic_client=elastic_connection,
-        state=state,
+        storage=redis_storage,
     )
 
     genre_loader = providers.Singleton(
         genres.GenreLoader,
         elastic_client=elastic_connection,
-        state=state,
+        storage=redis_storage,
     )
 
     person_loader = providers.Singleton(
         persons.PersonLoader,
         elastic_client=elastic_connection,
-        state=state,
+        storage=redis_storage,
     )
 
     # ETL -> Pipelines
@@ -108,7 +103,7 @@ class Container(containers.DeclarativeContainer):
         loader=filmwork_loader,
         transformer=filmwork_transformer,
         extractor=filmwork_extractor,
-        state=state,
+        storage=redis_storage,
     )
 
     genre_pipeline = providers.Singleton(
@@ -116,7 +111,7 @@ class Container(containers.DeclarativeContainer):
         loader=genre_loader,
         transformer=genre_transformer,
         extractor=genre_extractor,
-        state=state,
+        storage=redis_storage,
     )
 
     person_pipeline = providers.Singleton(
@@ -124,7 +119,7 @@ class Container(containers.DeclarativeContainer):
         loader=person_loader,
         transformer=person_transformer,
         extractor=person_extractor,
-        state=state,
+        storage=redis_storage,
     )
 
     pipelines_to_run = providers.List(filmwork_pipeline, genre_pipeline, person_pipeline)
