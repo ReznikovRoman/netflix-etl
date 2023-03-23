@@ -3,7 +3,7 @@ import datetime
 from collections.abc import Iterator
 from typing import Any
 
-from etl.infrastructure.db.state import State
+from etl.infrastructure.db.storage import BaseStorage
 
 from .extractors import PgExtractor
 from .loaders import ElasticLoader
@@ -18,7 +18,7 @@ class ETLPipeline:
     loader: ElasticLoader
     transformer: ElasticTransformer
     extractor: PgExtractor
-    state: State
+    storage: BaseStorage
 
     def extract(self) -> Iterator[list[PgSchema]]:
         yield from self.extractor.extract()
@@ -40,7 +40,7 @@ class ETLPipeline:
 
     def update_timestamp_state(self) -> None:
         timestamp = str(datetime.datetime.now(tz=datetime.UTC).timestamp()).rsplit(".", 1)[0]
-        self.state.set_state(self.extractor.etl_timestamp_key, timestamp)
+        self.storage.save(self.extractor.etl_timestamp_key, timestamp)
 
     def remove_ids_from_state(self) -> None:
-        self.state.set_state(self.extractor.etl_loaded_entities_ids_key, "")
+        self.storage.remove(self.extractor.etl_loaded_entities_ids_key)
